@@ -984,7 +984,11 @@ const res = await fetch('https://api.web3forms.com/submit', {
   }
 
   function runScript(i) {
-    if (i >= phoneScript.length) { setTimeout(window.phoneEnd, 1500); return; }
+    if (i >= phoneScript.length) {
+      // Demo beendet — Auflegen-Button bleibt sichtbar
+      addPhoneBubble('bot', '📞 Demo beendet. Drücke den roten Knopf zum Beenden.');
+      return;
+    }
     const item = phoneScript[i];
     const delay = i === 0 ? 700 : (item.role === 'bot' ? 1000 : 1800);
     setTimeout(() => {
