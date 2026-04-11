@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xypher Demo — Live Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #f0f2f8;
+  --white:    #ffffff;
+  --border:   #e2e6f0;
+  --acc:      #5b4ef0;
+  --acc-soft: rgba(91,78,240,0.08);
+  --acc-mid:  rgba(91,78,240,0.18);
+  --text:     #1e2240;
+  --text2:    #7880a0;
+  --muted:    #b0b8cc;
+  --shadow:   0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.12);
+}
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* NAV */
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 var(--border);
+}
+.logo {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+}
+.logo-hex {
+  width: 24px; height: 24px;
+  background: var(--acc);
+  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  animation: spin 14s linear infinite;
+  box-shadow: 0 0 10px rgba(91,78,240,.4);
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.nav-sep { color: var(--muted); font-size: 18px; }
+.nav-links {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all .15s;
+}
+.nav-links a:hover { background: var(--acc-soft); color: var(--acc); }
+.nav-links a.active { background: var(--acc); color: white; }
+
+.nav-badge {
+  margin-left: auto;
+  font-family: 'Syne Mono', monospace;
+  font-size: 10px;
+  color: var(--text2);
+  background: var(--acc-soft);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: .05em;
+}
+
+/* HERO */
+.hero {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--acc);
+  background: var(--acc-soft);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.hero-tag::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--acc);
+  border-radius: 50%;
+  animation: lp 2s ease-in-out infinite;
+}
+@keyframes lp { 0%,100%{opacity:1}50%{opacity:.4} }
+
+.hero h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--acc); }
+.hero p {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 560px;
+  margin: 0 auto 12px;
+  line-height: 1.6;
+}
+
+/* DEMO AREA */
+.demo-wrap {
+  max-width: 1080px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+}
+
+.demo-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  min-height: 540px;
+}
+
+.demo-browser-bar {
+  background: #f5f6fa;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #ff5f57; }
+.dot.y { background: #febc2e; }
+.dot.g { background: #28c840; }
+.url-bar {
+  margin-left: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-family: 'Syne Mono', monospace;
+  color: var(--text2);
+  flex: 1;
+  max-width: 320px;
+}
+
+/* FAKE WEBSITE */
+.fake-site {
+  padding: 40px;
+  min-height: 480px;
+  background: #fff;
+  position: relative;
+}
+.fake-site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f2f8;
+}
+.salon-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #c9a96e;
+  letter-spacing: .05em;
+}
+.salon-nav {
+  display: flex;
+  gap: 24px;
+}
+.salon-nav a {
+  font-size: 13px;
+  color: #888;
+  text-decoration: none;
+}
+
+.salon-hero {
+  text-align: center;
+  padding: 30px 0 40px;
+}
+.salon-hero h2 {
+  font-size: 32px;
+  color: #2a2a2a;
+  margin-bottom: 12px;
+}
+.salon-hero p {
+  color: #888;
+  font-size: 15px;
+}
+.salon-cta {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 28px;
+  background: #c9a96e;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* CHAT WIDGET */
+.chat-widget {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+}
+
+.chat-toggle {
+  width: 56px; height: 56px;
+  background: var(--acc);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(91,78,240,.4);
+  transition: transform .2s;
+  position: relative;
+}
+.chat-toggle:hover { transform: scale(1.08); }
+.chat-toggle svg { width: 24px; height: 24px; fill: white; }
+
+.chat-unread {
+  position: absolute;
+  top: -3px; right: -3px;
+  width: 18px; height: 18px;
+  background: #e84545;
+  border-radius: 50%;
+  border: 2px solid white;
+  font-size: 9px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.chat-box {
+  position: absolute;
+  bottom: 68px;
+  right: 0;
+  width: 340px;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  max-height: 460px;
+  animation: slideUp .25s ease;
+}
+.chat-box.open { display: flex; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.chat-header {
+  background: var(--acc);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-avatar {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.chat-header-info h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+.chat-header-info p {
+  font-size: 11px;
+  color: rgba(255,255,255,.75);
+}
+.chat-header-status {
+  width: 8px; height: 8px;
+  background: #28c840;
+  border-radius: 50%;
+  margin-left: auto;
+  box-shadow: 0 0 6px #28c840;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 82%;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.msg.bot { align-self: flex-start; }
+.msg.user { align-self: flex-end; }
+
+.msg-bubble {
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.msg.bot .msg-bubble {
+  background: var(--acc-soft);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.msg.user .msg-bubble {
+  background: var(--acc);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.msg-time {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  padding: 0 4px;
+}
+.msg.user .msg-time { text-align: right; }
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 14px;
+  background: var(--acc-soft);
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  width: fit-content;
+  align-self: flex-start;
+}
+.typing-indicator span {
+  width: 7px; height: 7px;
+  background: var(--acc);
+  border-radius: 50%;
+  animation: bounce 1.2s ease-in-out infinite;
+  opacity: .5;
+}
+.typing-indicator span:nth-child(2) { animation-delay: .2s; }
+.typing-indicator span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce {
+  0%,80%,100% { transform: translateY(0); opacity: .5; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+.chat-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.chat-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: 'Syne', sans-serif;
+  outline: none;
+  transition: border .15s;
+}
+.chat-input:focus { border-color: var(--acc); }
+.chat-send {
+  width: 34px; height: 34px;
+  background: var(--acc);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform .15s;
+}
+.chat-send:hover { transform: scale(1.1); }
+.chat-send svg { width: 16px; height: 16px; fill: white; }
+
+/* CHIPS */
+.quick-chips {
+  padding: 0 16px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--acc);
+  background: var(--acc-soft);
+  border: 1px solid var(--acc-mid);
+  border-radius: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.chip:hover { background: var(--acc); color: white; }
+
+/* FEATURES */
+.features {
+  max-width: 1080px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.feature-icon {
+  width: 42px; height: 42px;
+  background: var(--acc-soft);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+.feature-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.feature-card p {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 28px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  font-size: 13px;
+  color: var(--text2);
+}
+footer a {
+  color: var(--acc);
+  text-decoration: none;
+  font-weight: 700;
+}
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .salon-nav { display: none; }
+  .fake-site { padding: 20px; }
+  .chat-box { width: 290px; }
+  .hero { padding: 36px 16px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-hex"></div>
+    XYPHER
+  </a>
+  <span class="nav-sep">·</span>
+  <div class="nav-links">
+    <a href="demo-chatbot.html" class="active">💬 Chatbot</a>
+    <a href="demo-telefon.html">📞 Telefon-Bot</a>
+    <a href="demo-email.html">✉️ E-Mail</a>
+  </div>
+  <span class="nav-badge">LIVE DEMO</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">So sieht Ihr Chatbot aus</div>
+  <h1>KI-Chatbot für <span>Ihr Unternehmen</span></h1>
+  <p>Dieser Chatbot läuft live — stellen Sie echte Fragen! Er beantwortet Öffnungszeiten, Preise und bucht Termine — vollautomatisch, rund um die Uhr.</p>
+</section>
+
+<!-- DEMO CARD -->
+<section class="demo-wrap">
+  <div class="demo-card">
+    <div class="demo-browser-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <div class="url-bar">🔒 salon-bella.de</div>
+    </div>
+
+    <div class="fake-site">
+      <div class="fake-site-header">
+        <div class="salon-logo">✂ Salon Bella</div>
+        <nav class="salon-nav">
+          <a href="#">Leistungen</a>
+          <a href="#">Preise</a>
+          <a href="#">Galerie</a>
+          <a href="#">Kontakt</a>
+        </nav>
+      </div>
+
+      <div class="salon-hero">
+        <h2>Ihr Wohlfühlsalon in der City</h2>
+        <p>Premium Haarpflege • Colorierung • Styling</p>
+        <a class="salon-cta" href="#">Termin buchen</a>
+      </div>
+
+      <!-- CHAT WIDGET -->
+      <div class="chat-widget">
+        <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          <div class="chat-unread" id="chatUnread">1</div>
+        </button>
+
+        <div class="chat-box" id="chatBox">
+          <div class="chat-header">
+            <div class="chat-avatar">💇</div>
+            <div class="chat-header-info">
+              <h3>Bella — KI-Assistent</h3>
+              <p>Salon Bella • Powered by Xypher</p>
+            </div>
+            <div class="chat-header-status"></div>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg bot">
+              <div class="msg-bubble">👋 Hallo! Ich bin Bella, Ihr KI-Assistent. Wie kann ich Ihnen helfen?</div>
+              <div class="msg-time">Jetzt</div>
+            </div>
+          </div>
+
+          <div class="quick-chips" id="quickChips">
+            <div class="chip" onclick="sendQuick('Welche Öffnungszeiten haben Sie?')">🕐 Öffnungszeiten</div>
+            <div class="chip" onclick="sendQuick('Was kostet ein Haarschnitt?')">💶 Preise</div>
+            <div class="chip" onclick="sendQuick('Wie kann ich einen Termin buchen?')">📅 Termin buchen</div>
+          </div>
+
+          <div class="chat-footer">
+            <input class="chat-input" id="chatInput" type="text" placeholder="Frage stellen…" onkeydown="if(event.key==='Enter') sendMessage()">
+            <button class="chat-send" onclick="sendMessage()">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <h3>Sofortantworten 24/7</h3>
+    <p>Kein Anruf, kein Warten. Kunden bekommen jederzeit Antworten — auch nachts und am Wochenende.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🎯</div>
+    <h3>Individuell trainiert</h3>
+    <p>Der Chatbot kennt Ihre Preise, Öffnungszeiten und Leistungen — maßgeschneidert für Ihr Unternehmen.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📈</div>
+    <h3>Mehr Buchungen</h3>
+    <p>Direkte Terminbuchung im Chat erhöht die Conversion — kein Abbruch durch langen Buchungsprozess.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔧</div>
+    <h3>Einfache Integration</h3>
+    <p>Ein Snippet-Code, fertig. Läuft auf jeder Website — WordPress, Wix, Jimdo, Custom.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Powered by <strong>Xypher</strong> — KI-Lösungen für lokale Unternehmen
+</footer>
+
+<script>
+let chatOpen = false;
+const messages = [
+  { role: "system", content: "Du bist der freundliche KI-Assistent von Salon Bella. Beantworte Fragen zu Öffnungszeiten (Mo-Sa 9-19 Uhr), Preisen (Haarschnitt ab 35€, Färben ab 65€), Terminbuchung (Tel: 0123-456789). Sei kurz und hilfsbereit. Antworte auf Deutsch." }
+];
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const box = document.getElementById('chatBox');
+  const unread = document.getElementById('chatUnread');
+  box.classList.toggle('open', chatOpen);
+  if (chatOpen) {
+    unread.style.display = 'none';
+    document.getElementById('chatInput').focus();
+  }
+}
+
+function sendQuick(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function getTime() {
+  return new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+
+function appendMsg(role, text) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'typing-indicator';
+  div.id = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  document.getElementById('quickChips').style.display = 'none';
+
+  appendMsg('user', text);
+  messages.push({ role: 'user', content: text });
+
+  showTyping();
+  const container = document.getElementById('chatMessages');
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 256,
+        messages: messages.filter(m => m.role !== 'system'),
+        system: messages[0].content
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+    const reply = data.content?.[0]?.text || 'Entschuldigung, ein Fehler ist aufgetreten.';
+    messages.push({ role: 'assistant', content: reply });
+    appendMsg('bot', reply);
+  } catch (e) {
+    hideTyping();
+    appendMsg('bot', '⚠️ Verbindungsfehler. Bitte versuchen Sie es erneut.');
+  }
+}
+
+// fix scrollHeight typo
+document.getElementById('chatMessages').addEventListener('DOMNodeInserted', function() {
+  this.scrollTop = this.scrollHeight;
+});
+</script>
+
+</body>
+</html>
