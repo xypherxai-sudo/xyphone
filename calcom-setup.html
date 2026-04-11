@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cal.com Integration einrichten — Xypher</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0f2f8; --white: #ffffff; --border: #e2e6f0;
+  --acc: #5b4ef0; --text: #1e2240; --text2: #7880a0;
+  --green: #00b87a; --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.04);
+}
+body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+nav {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 58px; display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-size: 17px; font-weight: 800; letter-spacing: .18em; color: var(--text); text-decoration: none; }
+.logo span { color: var(--acc); }
+.main { max-width: 800px; margin: 40px auto; padding: 0 24px 80px; }
+h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+.subtitle { color: var(--text2); font-size: 16px; margin-bottom: 40px; }
+.step {
+  background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+  padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.step-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.step-num {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--acc);
+  color: #fff; font-weight: 800; font-size: 18px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-title { font-size: 20px; font-weight: 700; }
+.step-desc { color: var(--text2); font-size: 14px; margin-top: 4px; }
+p { line-height: 1.7; color: var(--text2); margin-bottom: 12px; }
+code {
+  background: #f0f2f8; border: 1px solid var(--border); border-radius: 6px;
+  padding: 2px 8px; font-family: 'Syne Mono', monospace; font-size: 13px; color: var(--acc);
+}
+pre {
+  background: #1e2240; color: #a8d8a8; border-radius: 12px;
+  padding: 20px; font-family: 'Syne Mono', monospace; font-size: 13px;
+  line-height: 1.6; overflow-x: auto; margin: 16px 0;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(91,78,240,0.1); color: var(--acc);
+  border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: 600;
+  margin-bottom: 16px;
+}
+.config-form { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.field input {
+  width: 100%; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; font-family: inherit; font-size: 14px;
+  background: var(--bg); color: var(--text); outline: none;
+  transition: border-color .15s;
+}
+.field input:focus { border-color: var(--acc); }
+.save-btn {
+  background: var(--acc); color: #fff; border: none; border-radius: 10px;
+  padding: 12px 24px; font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: opacity .15s;
+}
+.save-btn:hover { opacity: 0.9; }
+.success-msg {
+  display: none; background: rgba(0,184,122,0.1); border: 1px solid var(--green);
+  color: var(--green); border-radius: 10px; padding: 12px 16px;
+  font-size: 14px; font-weight: 600; margin-top: 12px;
+}
+.info-box {
+  background: rgba(91,78,240,0.06); border: 1px solid rgba(91,78,240,0.2);
+  border-radius: 10px; padding: 16px; margin: 16px 0;
+}
+.info-box strong { color: var(--acc); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">XY<span>PH</span>ER</a>
+  <span style="color:var(--text2);font-size:13px;">/ Cal.com Integration</span>
+</nav>
+
+<div class="main">
+  <h1>📅 Cal.com Integration einrichten</h1>
+  <p class="subtitle">Verbinde Xypher mit deinem Cal.com Konto damit Lisa echte Termine buchen kann.</p>
+
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Cal.com Konto erstellen</div>
+        <div class="step-desc">Kostenlos starten — kein Kreditkarte nötig</div>
+      </div>
+    </div>
+    <p>Gehe zu <strong><a href="https://cal.com" target="_blank" style="color:var(--acc)">cal.com</a></strong> und erstelle ein kostenloses Konto. Cal.com ist ein Open-Source Terminbuchungssystem.</p>
+    <div class="info-box">
+      <strong>💡 Tipp:</strong> Du kannst Cal.com auch selbst hosten. Für den Anfang reicht das kostenlose Cloud-Angebot.
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Event Type erstellen</div>
+        <div class="step-desc">Definiere welche Dienstleistungen buchbar sind</div>
+      </div>
+    </div>
+    <p>Im Cal.com Dashboard:</p>
+    <ol style="padding-left:20px;line-height:2;color:var(--text2)">
+      <li>Klicke auf <strong>"+ New"</strong> → <strong>"Event Type"</strong></li>
+      <li>Gib einen Namen ein (z.B. "Haarschnitt" oder "Allgemeine Beratung")</li>
+      <li>Stelle die Dauer ein (z.B. 30 oder 60 Minuten)</li>
+      <li>Konfiguriere deine Verfügbarkeit</li>
+      <li>Speichere und notiere die <strong>Event Type ID</strong> (steht in der URL: <code>/event-types/123</code>)</li>
+    </ol>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">API Key generieren</div>
+        <div class="step-desc">Für den Datenzugriff</div>
+      </div>
+    </div>
+    <p>Im Cal.com Dashboard:</p>
+    <ol style="padding-left:20px;line-height:2;color:var(--text2)">
+      <li>Gehe zu <strong>Settings → Developer → API Keys</strong></li>
+      <li>Klicke auf <strong>"+ Add"</strong></li>
+      <li>Gib dem Key einen Namen (z.B. "Xypher")</li>
+      <li>Kopiere den generierten API Key</li>
+    </ol>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Xypher konfigurieren</div>
+        <div class="step-desc">API Key und Event Type ID eintragen</div>
+      </div>
+    </div>
+    <p>Trage deine Cal.com Daten hier ein oder bearbeite die Datei <code>calendar-config.json</code> direkt:</p>
+    <div class="config-form">
+      <div class="field">
+        <label>Cal.com API Key</label>
+        <input type="password" id="apiKey" placeholder="cal_live_..." />
+      </div>
+      <div class="field">
+        <label>Event Type ID</label>
+        <input type="text" id="eventTypeId" placeholder="123" />
+      </div>
+      <div class="field">
+        <label>Business Name</label>
+        <input type="text" id="businessName" placeholder="Mein Salon" />
+      </div>
+      <div class="field">
+        <label>Timezone</label>
+        <input type="text" id="timezone" value="Europe/Berlin" />
+      </div>
+      <button class="save-btn" onclick="saveConfig()">💾 Konfiguration speichern</button>
+      <div class="success-msg" id="successMsg">✅ Konfiguration gespeichert! Starte den Server neu.</div>
+    </div>
+
+    <p style="margin-top:20px;">Oder direkt die Datei bearbeiten:</p>
+    <pre>// /Users/admin/.openclaw/workspace/xypher/calendar-config.json
+{
+  "mode": "live",
+  "calcom_api_key": "cal_live_DEIN_KEY",
+  "event_type_id": "123",
+  "business_name": "Mein Salon",
+  "timezone": "Europe/Berlin"
+}</pre>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Server neu starten & testen</div>
+        <div class="step-desc">Integration überprüfen</div>
+      </div>
+    </div>
+    <pre>pkill -f "node server.js"
+cd /Users/admin/.openclaw/workspace/xypher
+node server.js &
+
+# Test: Verfügbare Slots
+curl "http://localhost:3131/api/calendar/slots?date=2026-04-01"
+
+# Test: Konfiguration
+curl "http://localhost:3131/api/calendar/config"</pre>
+    <p style="margin-top:16px;">Wenn alles funktioniert, siehst du <code>"mode": "live"</code> in der Config-Antwort.</p>
+  </div>
+
+  <!-- ElevenLabs Tools -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">6</div>
+      <div>
+        <div class="step-title">ElevenLabs Tools einrichten</div>
+        <div class="step-desc">Lisa mit den Kalender-Tools verbinden</div>
+      </div>
+    </div>
+    <p>Gehe zu <a href="https://elevenlabs.io/app/conversational-ai" target="_blank" style="color:var(--acc)">ElevenLabs Conversational AI</a> und öffne den Agenten. Dann die detaillierte Anleitung:</p>
+    <a href="elevenlabs-tools-setup.md" style="
+      display:inline-block; margin-top:8px;
+      background:var(--acc); color:#fff; text-decoration:none;
+      border-radius:8px; padding:10px 20px; font-weight:700; font-size:14px;
+    ">📄 ElevenLabs Setup-Anleitung öffnen →</a>
+  </div>
+</div>
+
+<script>
+async function saveConfig() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const eventTypeId = document.getElementById('eventTypeId').value.trim();
+  const businessName = document.getElementById('businessName').value.trim() || 'Mein Salon';
+  const timezone = document.getElementById('timezone').value.trim() || 'Europe/Berlin';
+
+  if (!apiKey || !eventTypeId) {
+    alert('Bitte API Key und Event Type ID eingeben.');
+    return;
+  }
+
+  // Konfiguration via API speichern (erfordert einen Save-Endpoint — hier nur als Hinweis)
+  const config = {
+    mode: 'live',
+    calcom_api_key: apiKey,
+    event_type_id: eventTypeId,
+    business_name: businessName,
+    timezone: timezone,
+    open_hours: {
+      monday: ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"],
+      tuesday: ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"],
+      wednesday: ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"],
+      thursday: ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"],
+      friday: ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"],
+      saturday: ["09:00","10:00","11:00","12:00","13:00"],
+      sunday: []
+    }
+  };
+
+  // In die Zwischenablage kopieren
+  await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('successMsg').textContent = '✅ Konfiguration in Zwischenablage kopiert! Füge sie in calendar-config.json ein.';
+}
+</script>
+
+</body>
+</html>
