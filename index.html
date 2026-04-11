@@ -1051,10 +1051,16 @@ const res = await fetch('https://api.web3forms.com/submit', {
           const ind = document.getElementById('phoneMicIndicator');
           if (ind) ind.style.display = 'flex';
         },
-        onDisconnect: () => { window.phoneEnd(); },
+        onDisconnect: () => {
+          // Verbindung getrennt — UI offen lassen, User kann selbst auflegen
+          addPhoneBubble('bot', 'Gespräch beendet. Drücke den roten Knopf.');
+          document.getElementById('phoneStatus').textContent = 'Verbindung getrennt';
+          const ind = document.getElementById('phoneMicIndicator');
+          if (ind) ind.style.display = 'none';
+        },
         onError: (err) => {
-          console.warn('ElevenLabs Fehler, Demo-Modus:', err);
-          runScript(0);
+          console.warn('ElevenLabs Fehler:', err);
+          addPhoneBubble('bot', 'Verbindungsfehler. Drücke den roten Knopf und versuch es erneut.');
           document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
           const ind = document.getElementById('phoneMicIndicator');
           if (ind) ind.style.display = 'none';
@@ -1074,9 +1080,10 @@ const res = await fetch('https://api.web3forms.com/submit', {
       window._phoneConv = conv;
     } catch(e) {
       // Mikrofon verweigert oder nicht verfügbar → Demo-Script
-      console.log('Kein Mikrofon, starte Demo-Script:', e.message);
-      document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
-      runScript(0);
+      console.log('Mikrofon-Fehler:', e.message);
+      addPhoneBubble('bot', '❌ Mikrofon nicht verfügbar. Bitte Mikrofonzugriff erlauben und neu versuchen.');
+      document.getElementById('phoneStatus').textContent = 'Mikrofon blockiert';
+      phoneRunning = false;
     }
   };
 
