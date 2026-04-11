@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xypher — Bot einrichten</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #7c3aed;
+  --primary-dark: #6d28d9;
+  --accent: #00d4aa;
+  --bg: #0a0a14;
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.1);
+  --text: #f0f0ff;
+  --text-muted: rgba(240,240,255,0.55);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* BG EFFECTS */
+.bg-orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%); top: -150px; right: -150px; pointer-events: none; z-index: 0; }
+.bg-orb2 { position: fixed; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,212,170,0.1) 0%, transparent 70%); bottom: -100px; left: -100px; pointer-events: none; z-index: 0; }
+.bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(124,58,237,0.04) 1px,transparent 1px), linear-gradient(90deg,rgba(124,58,237,0.04) 1px,transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+.bg-text { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 22vw; font-weight: 900; color: rgba(124,58,237,0.03); letter-spacing: -0.05em; pointer-events: none; z-index: 0; white-space: nowrap; }
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 60px;
+  background: rgba(10,10,20,0.7);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(124,58,237,0.2);
+  position: relative; z-index: 10;
+}
+.logo { font-size: 1.2rem; font-weight: 800; color: white; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 12px var(--primary); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 12px var(--primary); } 50% { box-shadow: 0 0 24px var(--primary); } }
+.nav-back { color: var(--text-muted); text-decoration: none; font-size: 0.88rem; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.nav-back:hover { color: white; }
+
+/* MAIN */
+main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 3rem 1.5rem;
+  position: relative; z-index: 1;
+}
+
+.wizard {
+  width: 100%; max-width: 620px;
+}
+
+/* PROGRESS */
+.progress-bar {
+  display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem;
+}
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  border: 2px solid rgba(124,58,237,0.3);
+  color: var(--text-muted);
+  background: var(--glass);
+  transition: all 0.3s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.step-dot.active { border-color: var(--primary); color: white; background: var(--primary); box-shadow: 0 0 20px rgba(124,58,237,0.5); }
+.step-dot.done { border-color: var(--accent); color: var(--accent); background: rgba(0,212,170,0.1); }
+.step-line { flex: 1; height: 2px; background: rgba(124,58,237,0.15); transition: background 0.3s; }
+.step-line.done { background: var(--accent); }
+
+/* CARD */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  backdrop-filter: blur(10px);
+  display: none;
+}
+.card.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.step-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(124,58,237,0.3);
+  color: #a78bfa;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 99px; margin-bottom: 1.2rem;
+}
+.card h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.03em; }
+.card h2 span { background: linear-gradient(135deg,#a78bfa,#60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.card p.desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+
+/* INPUTS */
+.field { margin-bottom: 1.2rem; }
+.field label { display: block; font-size: 0.85rem; font-weight: 600; color: rgba(240,240,255,0.7); margin-bottom: 0.5rem; }
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  color: white;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+}
+.field input::placeholder, .field textarea::placeholder { color: rgba(240,240,255,0.25); }
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: rgba(124,58,237,0.6);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  background: rgba(124,58,237,0.08);
+}
+.field select option { background: #1a1a2e; color: white; }
+.field textarea { resize: vertical; min-height: 100px; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* BRANCHE PILLS */
+.branche-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; margin-top: 0.5rem; }
+.branche-pill {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 0.9rem 0.7rem;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.branche-pill:hover { border-color: rgba(124,58,237,0.4); color: white; background: rgba(124,58,237,0.1); }
+.branche-pill.selected { border-color: var(--primary); color: white; background: rgba(124,58,237,0.2); box-shadow: 0 0 16px rgba(124,58,237,0.2); }
+.branche-pill span { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+
+/* TONE PILLS */
+.tone-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.7rem; margin-top: 0.5rem; }
+.tone-pill {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tone-pill:hover { border-color: rgba(124,58,237,0.4); color: white; }
+.tone-pill.selected { border-color: var(--primary); color: white; background: rgba(124,58,237,0.2); }
+.tone-pill span { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+
+/* BUTTONS */
+.btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+.btn-next {
+  background: linear-gradient(135deg, var(--primary), #5b21b6);
+  color: white; border: none; border-radius: 12px;
+  padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  box-shadow: 0 4px 24px rgba(124,58,237,0.4);
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.5); }
+.btn-back {
+  background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 0.85rem 1.4rem; font-size: 0.95rem; font-weight: 500;
+  font-family: inherit; cursor: pointer; transition: all 0.2s;
+}
+.btn-back:hover { color: white; border-color: rgba(255,255,255,0.2); }
+
+/* SUCCESS */
+.success-screen {
+  text-align: center; padding: 1rem 0;
+}
+.success-icon {
+  width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), #00a070);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin: 0 auto 1.5rem;
+  box-shadow: 0 0 40px rgba(0,212,170,0.4);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+@media (max-width: 600px) {
+  .field-row { grid-template-columns: 1fr; }
+  .branche-grid { grid-template-columns: repeat(2, 1fr); }
+  .tone-grid { grid-template-columns: 1fr 1fr; }
+  .card { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb1"></div>
+<div class="bg-orb2"></div>
+<div class="bg-grid"></div>
+<div class="bg-text">XYPHER</div>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-dot"></div> XYPHER
+  </a>
+  <a class="nav-back" href="/">← Zurück zur Startseite</a>
+</nav>
+
+<main>
+  <div class="wizard">
+
+    <!-- PROGRESS -->
+    <div class="progress-bar" id="progressBar">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-line" id="line3"></div>
+      <div class="step-dot" id="dot4">4</div>
+      <div class="step-line" id="line4"></div>
+      <div class="step-dot" id="dot5">✓</div>
+    </div>
+
+    <!-- SCHRITT 1: Branche -->
+    <div class="card active" id="step1">
+      <div class="step-tag">Schritt 1 von 4</div>
+      <h2>Was ist dein <span>Business?</span></h2>
+      <p class="desc">Wähle deine Branche — wir passen den Bot genau darauf an.</p>
+
+      <div class="branche-grid">
+        <div class="branche-pill" onclick="selectBranche(this, '💇 Friseur / Beauty')">
+          <span>💇</span>Friseur / Beauty
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🏥 Arztpraxis')">
+          <span>🏥</span>Arztpraxis
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🍕 Restaurant / Café')">
+          <span>🍕</span>Restaurant / Café
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🔧 Handwerker')">
+          <span>🔧</span>Handwerker
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🚗 Autowerkstatt')">
+          <span>🚗</span>Autowerkstatt
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🏋️ Fitnessstudio')">
+          <span>🏋️</span>Fitnessstudio
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '🏠 Immobilien')">
+          <span>🏠</span>Immobilien
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '⚖️ Anwaltskanzlei')">
+          <span>⚖️</span>Anwaltskanzlei
+        </div>
+        <div class="branche-pill" onclick="selectBranche(this, '❓ Andere')">
+          <span>❓</span>Andere
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:1rem;display:none;" id="andereField">
+        <label>Welche Branche?</label>
+        <input type="text" id="andereText" placeholder="z.B. Tierarzt, Kosmetikstudio..." />
+      </div>
+
+      <div class="btn-row">
+        <div></div>
+        <button class="btn-next" onclick="goTo(2)">Weiter →</button>
+      </div>
+    </div>
+
+    <!-- SCHRITT 2: Business-Info -->
+    <div class="card" id="step2">
+      <div class="step-tag">Schritt 2 von 4</div>
+      <h2>Dein <span>Business</span></h2>
+      <p class="desc">Der Bot lernt alles über dich — so kann er deine Kunden perfekt bedienen.</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Name des Unternehmens *</label>
+          <input type="text" id="bizName" placeholder="z.B. Salon Bella" />
+        </div>
+        <div class="field">
+          <label>Stadt</label>
+          <input type="text" id="bizCity" placeholder="z.B. München" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Adresse</label>
+        <input type="text" id="bizAddress" placeholder="Straße, Hausnummer" />
+      </div>
+
+      <div class="field">
+        <label>Öffnungszeiten</label>
+        <textarea id="bizHours" placeholder="z.B.:&#10;Mo–Fr: 09:00–18:00&#10;Sa: 09:00–14:00&#10;So: Geschlossen" rows="4"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Telefonnummer</label>
+          <input type="tel" id="bizPhone" placeholder="+49 89 12345678" />
+        </div>
+        <div class="field">
+          <label>Webseite (optional)</label>
+          <input type="text" id="bizWeb" placeholder="www.meinbusiness.de" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(1)">← Zurück</button>
+        <button class="btn-next" onclick="goTo(3)">Weiter →</button>
+      </div>
+    </div>
+
+    <!-- SCHRITT 3: Leistungen & Infos -->
+    <div class="card" id="step3">
+      <div class="step-tag">Schritt 3 von 4</div>
+      <h2>Leistungen & <span>Infos</span></h2>
+      <p class="desc">Was soll dein Bot wissen? Je mehr du angibst, desto besser antwortet er.</p>
+
+      <div class="field">
+        <label>Deine Leistungen / Angebote / Speisekarte</label>
+        <textarea id="bizServices" placeholder="z.B.:&#10;- Herrenhaarschnitt: 25€&#10;- Damenhaarschnitt ab 35€&#10;- Färben ab 60€&#10;- Bartpflege: 15€" rows="6"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Häufige Fragen deiner Kunden</label>
+        <textarea id="bizFaq" placeholder="z.B.:&#10;- Brauche ich einen Termin?&#10;- Habt ihr Parkplätze?&#10;- Welche Zahlungsmittel akzeptiert ihr?&#10;- Gibt es Rabatte für Studenten?" rows="5"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Wie soll der Bot klingen?</label>
+        <div class="tone-grid">
+          <div class="tone-pill" onclick="selectTone(this, 'freundlich')">
+            <span>😊</span>Freundlich
+          </div>
+          <div class="tone-pill" onclick="selectTone(this, 'professionell')">
+            <span>👔</span>Professionell
+          </div>
+          <div class="tone-pill" onclick="selectTone(this, 'locker')">
+            <span>😎</span>Locker
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(2)">← Zurück</button>
+        <button class="btn-next" onclick="goTo(4)">Weiter →</button>
+      </div>
+    </div>
+
+    <!-- SCHRITT 4: Kontakt -->
+    <div class="card" id="step4">
+      <div class="step-tag">Schritt 4 von 4</div>
+      <h2>Fast <span>geschafft!</span></h2>
+      <p class="desc">Wo sollen wir uns melden, wenn dein Bot fertig ist?</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Dein Name *</label>
+          <input type="text" id="contactName" placeholder="Max Mustermann" />
+        </div>
+        <div class="field">
+          <label>E-Mail *</label>
+          <input type="email" id="contactEmail" placeholder="max@beispiel.de" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Handynummer (für Rückfragen)</label>
+        <input type="tel" id="contactPhone" placeholder="+49 176 12345678" />
+      </div>
+
+      <div class="field">
+        <label>Welches Paket interessiert dich?</label>
+        <select id="contactPaket">
+          <option value="">Noch unsicher</option>
+          <option value="starter">Starter — 299€ + 49€/Monat</option>
+          <option value="professional">Professional — 499€ + 79€/Monat</option>
+          <option value="premium">Premium — 799€ + 99€/Monat</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Noch etwas, das wir wissen sollten?</label>
+        <textarea id="contactNote" placeholder="Optional — z.B. Besonderheiten, Wünsche..." rows="3"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(3)">← Zurück</button>
+        <button class="btn-next" onclick="submitForm()" id="submitBtn">🚀 Bot bestellen</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="card" id="step5">
+      <div class="success-screen">
+        <div class="success-icon">✅</div>
+        <h2 style="margin-bottom:0.7rem;">Danke, <span id="successName">!</span></h2>
+        <p style="color:var(--text-muted);font-size:1rem;margin-bottom:2rem;line-height:1.7;">
+          Wir haben deine Angaben erhalten und melden uns innerhalb von <strong style="color:white;">24 Stunden</strong> bei dir — mit einer persönlichen Demo deines Bots.
+        </p>
+        <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:16px;padding:1.5rem;text-align:left;margin-bottom:2rem;">
+          <div style="font-size:0.85rem;font-weight:700;color:#a78bfa;margin-bottom:1rem;letter-spacing:0.05em;">WAS JETZT PASSIERT</div>
+          <div style="display:flex;flex-direction:column;gap:0.8rem;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span style="width:24px;height:24px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
+              <span style="font-size:0.9rem;color:var(--text-muted);">Wir bauen deinen Bot mit deinen Infos</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span style="width:24px;height:24px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">2</span>
+              <span style="font-size:0.9rem;color:var(--text-muted);">Du bekommst eine persönliche Demo zum Testen</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span style="width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;color:#0a0a14;">3</span>
+              <span style="font-size:0.9rem;color:var(--text-muted);">Nach deiner Freigabe ist dein Bot live 🎉</span>
+            </div>
+          </div>
+        </div>
+        <a href="/" style="display:inline-flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text-muted);text-decoration:none;padding:0.8rem 1.5rem;border-radius:12px;font-size:0.9rem;transition:all 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'">← Zurück zur Startseite</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+let currentStep = 1;
+let selectedBranche = '';
+let selectedTone = '';
+
+function selectBranche(el, name) {
+  document.querySelectorAll('.branche-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedBranche = name;
+  if (name === '❓ Andere') {
+    document.getElementById('andereField').style.display = 'block';
+  } else {
+    document.getElementById('andereField').style.display = 'none';
+  }
+}
+
+function selectTone(el, tone) {
+  document.querySelectorAll('.tone-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTone = tone;
+}
+
+function goTo(step) {
+  // Validate current step
+  if (step > currentStep) {
+    if (currentStep === 1 && !selectedBranche) {
+      alert('Bitte wähle deine Branche aus.');
+      return;
+    }
+    if (currentStep === 2 && !document.getElementById('bizName').value.trim()) {
+      alert('Bitte gib den Namen deines Unternehmens an.');
+      return;
+    }
+    if (currentStep === 4) return; // handled by submitForm
+  }
+
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = step;
+  document.getElementById('step' + currentStep).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  for (let i = 1; i <= 5; i++) {
+    const dot = document.getElementById('dot' + i);
+    if (!dot) continue;
+    dot.classList.remove('active', 'done');
+    if (i < currentStep) dot.classList.add('done');
+    else if (i === currentStep) dot.classList.add('active');
+  }
+  for (let i = 1; i <= 4; i++) {
+    const line = document.getElementById('line' + i);
+    if (!line) continue;
+    line.classList.toggle('done', i < currentStep);
+  }
+}
+
+async function submitForm() {
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  if (!name || !email) {
+    alert('Bitte gib deinen Namen und deine E-Mail an.');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '⏳ Wird gesendet...';
+  btn.disabled = true;
+
+  const data = {
+    branche: selectedBranche === '❓ Andere' ? document.getElementById('andereText').value : selectedBranche,
+    bizName: document.getElementById('bizName').value,
+    bizCity: document.getElementById('bizCity').value,
+    bizAddress: document.getElementById('bizAddress').value,
+    bizHours: document.getElementById('bizHours').value,
+    bizPhone: document.getElementById('bizPhone').value,
+    bizWeb: document.getElementById('bizWeb').value,
+    bizServices: document.getElementById('bizServices').value,
+    bizFaq: document.getElementById('bizFaq').value,
+    tone: selectedTone,
+    contactName: name,
+    contactEmail: email,
+    contactPhone: document.getElementById('contactPhone').value,
+    contactPaket: document.getElementById('contactPaket').value,
+    contactNote: document.getElementById('contactNote').value,
+  };
+
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ ...data, access_key: '57ca5d37-2f8b-4887-9910-b246aaa191df', subject: 'Neue Xyphone Kundenanfrage: ' + (data.bizName || data.contactName), botcheck: false, from_name: 'Xyphone Formular', replyto: email })
+    });
+  } catch(e) {}
+
+  document.getElementById('successName').textContent = name + '!';
+  goTo(5);
+}
+</script>
+
+</body>
+</html>
