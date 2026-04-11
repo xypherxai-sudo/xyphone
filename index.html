@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xyphone – KI-Telefon-Bot für lokale Unternehmen</title>
+  <meta name="description" content="Xyphone baut KI-Telefon-Bots für lokale Unternehmen. Nie wieder verpasste Anrufe — Ihr Bot nimmt ab, bucht Termine und beantwortet Fragen. 24/7, sofort erreichbar." />
+  <meta name="keywords" content="KI Telefon Bot, Telefonbot, KI Assistent, automatischer Anrufbeantworter, Terminbuchung, lokale Unternehmen, Chatbot, Sprachassistent" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://xyphone.de/" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Xyphone – KI-Telefon-Bot für lokale Unternehmen" />
+  <meta property="og:description" content="Nie wieder verpasste Anrufe. Ihr KI-Bot nimmt Anrufe entgegen, bucht Termine und beantwortet Fragen — rund um die Uhr." />
+  <meta property="og:url" content="https://xyphone.de/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Xyphone – KI-Telefon-Bot für lokale Unternehmen" />
+  <meta name="twitter:description" content="Nie wieder verpasste Anrufe. Ihr KI-Bot nimmt Anrufe entgegen und bucht Termine — 24/7." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #0f0f1e;
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 24px;
+    width: 100%; max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+    box-shadow: 0 24px 80px rgba(124,58,237,0.3);
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.07); border: none;
+    color: rgba(255,255,255,0.5); width: 32px; height: 32px;
+    border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.12); color: white; }
+  .modal-box::-webkit-scrollbar { width: 4px; }
+  .modal-box::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND EFFECTS -->
+  <div class="grid-overlay"></div>
+  <div style="position:fixed;width:400px;height:400px;background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%);top:40%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;animation:floatOrb1 18s ease-in-out infinite;"></div>
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22vw;font-weight:900;color:rgba(124,58,237,0.04);letter-spacing:-0.05em;pointer-events:none;z-index:0;white-space:nowrap;user-select:none;">XYPHONE</div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo"><div class="logo-dot"></div> XYPHONE</div>
+    <ul>
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#pakete">Pakete</a></li>
+      <li><a href="#kontakt" class="btn-nav">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="badge">📞 KI-Telefon-Bot für lokale Unternehmen</span>
+      <h1>Nie wieder einen<br />Anruf verpassen.</h1>
+      <p>Dein KI-Telefon-Bot nimmt Anrufe entgegen, beantwortet Fragen und bucht Termine — automatisch, rund um die Uhr, klingt wie ein echter Mitarbeiter.</p>
+      <div class="hero-btns">
+        <a href="#demo" class="btn-primary">📞 Demo anhören</a>
+        <a href="#pakete" class="btn-secondary">Preise ansehen</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span id="stat1">0</span><small>Stunden verfügbar</small></div>
+        <div class="stat"><span>&lt; 2 Sek</span><small>Antwortzeit</small></div>
+        <div class="stat"><span id="stat2">0</span><small>Extra-Personal nötig</small></div>
+        <script>
+          (function(){
+            function countUp(id,target,suffix,duration){
+              var el=document.getElementById(id),start=0,step=target/60;
+              var t=setInterval(function(){
+                start+=step;
+                if(start>=target){start=target;clearInterval(t);}
+                el.textContent=Math.round(start)+suffix;
+              },duration/60);
+            }
+            window.addEventListener('load',function(){
+              countUp('stat1',24,'/7',1200);
+              countUp('stat2',0,'€',800);
+            });
+          })();
+        </script>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="chat-bubble bot">📞 Anruf verbunden...</div>
+          <div class="chat-bubble bot">Ciao! 🍕 Willkommen bei Pizzeria Latina! Wie kann ich helfen?</div>
+          <div class="chat-bubble user">Ich möchte eine Pizza bestellen</div>
+          <div class="chat-bubble bot">Super! Welche Pizza darf es sein — Margherita, Salami oder lieber Pasta?</div>
+          <div class="typing"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEISTUNGEN -->
+  <section id="leistungen" class="leistungen">
+    <div class="container">
+      <h2>Dein KI-Telefon-Bot</h2>
+      <p class="subtitle">Kein verpasster Anruf mehr. Kein genervter Kunde. Keine Mehrkosten für Personal.</p>
+      <div class="cards">
+        <div class="card featured" style="grid-column: span 2;">
+          <div class="card-badge">Kernprodukt</div>
+          <div class="card-icon">📞</div>
+          <h3>KI-Telefon-Bot</h3>
+          <p>Dein Bot nimmt jeden Anruf sofort entgegen — egal ob 8 Uhr morgens oder 22 Uhr abends. Er klingt natürlich, versteht Kunden und erledigt alles automatisch.</p>
+          <ul>
+            <li>✅ Echte Telefonnummer für dein Business</li>
+            <li>✅ Terminbuchung & Bestätigung automatisch</li>
+            <li>✅ Beantwortet häufige Fragen (Öffnungszeiten, Preise, Adresse)</li>
+            <li>✅ Leitet komplexe Fälle an dich weiter</li>
+            <li>✅ Aufzeichnung & Transkript jedes Gesprächs</li>
+            <li>✅ Klingt wie ein echter Mitarbeiter</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon">💬</div>
+          <h3>Website-Chatbot</h3>
+          <p>Optionale Ergänzung: Ein Chat-Assistent auf deiner Website, der rund um die Uhr Fragen beantwortet.</p>
+          <ul>
+            <li>✅ Auf jede Website einbettbar</li>
+            <li>✅ Dein Branding</li>
+            <li>✅ Kombinierbar mit Telefon-Bot</li>
+          </ul>
+        </div>
+    </div>
+  </section>
+
+  <!-- WIE ES FUNKTIONIERT -->
+  <section style="padding:5rem 0;border-top:1px solid rgba(124,58,237,0.12);">
+    <div class="container" style="max-width:1000px;margin:0 auto;padding:0 24px;">
+      <h2 style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">So einfach geht's</h2>
+      <p style="text-align:center;color:rgba(240,240,255,0.5);margin-bottom:3.5rem;font-size:0.95rem;">Von der Anfrage bis zum fertigen Bot in 2–4 Werktagen</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2rem;position:relative;">
+        <div style="text-align:center;padding:2rem 1.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.2);border-radius:20px;position:relative;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;margin:0 auto 1.2rem;">1</div>
+          <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:0.6rem;">Demo anfragen</h3>
+          <p style="color:rgba(240,240,255,0.55);font-size:0.9rem;line-height:1.6;">Füll das kurze Formular aus — wir melden uns innerhalb von 2–4 Werktagen mit einer personalisierten Demo für dein Unternehmen.</p>
+        </div>
+        <div style="text-align:center;padding:2rem 1.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.2);border-radius:20px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;margin:0 auto 1.2rem;">2</div>
+          <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:0.6rem;">Wir richten alles ein</h3>
+          <p style="color:rgba(240,240,255,0.55);font-size:0.9rem;line-height:1.6;">Unser Team konfiguriert den Bot komplett für dich — mit deinen Infos, deinen Preisen, deinen Öffnungszeiten. Kein technisches Wissen nötig.</p>
+        </div>
+        <div style="text-align:center;padding:2rem 1.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(124,58,237,0.2);border-radius:20px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;margin:0 auto 1.2rem;">3</div>
+          <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:0.6rem;">Bot nimmt Anrufe an</h3>
+          <p style="color:rgba(240,240,255,0.55);font-size:0.9rem;line-height:1.6;">Ab sofort geht dein Bot ran — 24/7, auf Deutsch, natürlich klingend. Du bekommst alle Infos direkt aufs Handy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEISPIELE -->
+  <section class="beispiele">
+    <div class="container">
+      <h2>Perfekt für diese Branchen</h2>
+      <p class="subtitle">Überall dort, wo Anrufe den Arbeitsalltag bestimmen — und Personal Besseres zu tun hat.</p>
+      <div class="branchen-grid">
+        <div class="branche featured-branche">Friseur & Beauty<br/><small>Terminbuchung rund um die Uhr</small></div>
+        <div class="branche featured-branche">Arztpraxis<br/><small>Weniger Stress am Empfang</small></div>
+        <div class="branche featured-branche">Restaurant<br/><small>Reservierungen & Infos automatisch</small></div>
+        <div class="branche featured-branche">Handwerker<br/><small>Angebote & Terminanfragen automatisch</small></div>
+        <div class="branche featured-branche">Fitnessstudio<br/><small>Mitglieder-Infos & Kursbuchungen</small></div>
+        <div class="branche featured-branche">Autowerkstatt<br/><small>Terminvergabe ohne Wartezeit</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section id="demo" class="demo-section">
+    <div class="container">
+      <h2>Probier es <span>live aus</span></h2>
+      <p class="subtitle">Telefon-Bot links — Chatbot rechts. Beide KI-gesteuert, beide sofort verfügbar.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+
+        <!-- TELEFON BOT -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:1.5rem;text-align:center;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">📞 Telefon-Bot</div>
+          <div style="font-size:1.1rem;font-weight:800;color:white;margin-bottom:0.4rem;">Pizzeria Latina</div>
+          <div style="color:rgba(240,240,255,0.4);font-size:0.82rem;margin-bottom:1.2rem;">KI-Assistent · 24/7 erreichbar</div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:200px;background:#1a1a2e;border-radius:34px;padding:7px;box-shadow:0 16px 50px rgba(124,58,237,0.3),0 0 0 1px rgba(255,255,255,0.05);">
+              <div style="background:#0d0d1a;border-radius:28px;overflow:hidden;">
+                <div style="display:flex;justify-content:space-between;padding:4px 10px;font-size:8px;color:rgba(255,255,255,.4);font-family:monospace;"><span>9:41</span><span>LTE</span></div>
+                <div style="width:70px;height:14px;background:#1a1a2e;border-radius:0 0 10px 10px;margin:0 auto;"></div>
+                <div style="padding:12px;height:280px;display:flex;flex-direction:column;overflow:hidden;">
+                  <div id="phoneIdle" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;">
+                    <div style="width:56px;height:56px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 20px rgba(124,58,237,0.5);">🤖</div>
+                    <div style="color:white;font-size:13px;font-weight:700;">Pizzeria Latina</div>
+                    <div style="color:rgba(255,255,255,.35);font-size:10px;">Eingehender Anruf...</div>
+                    <div style="display:flex;gap:32px;margin-top:6px;">
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                        <button onclick="phoneDecline()" style="width:44px;height:44px;border-radius:50%;background:#e84545;border:none;cursor:pointer;font-size:17px;box-shadow:0 4px 14px rgba(232,69,69,0.4);">📵</button>
+                        <span style="color:rgba(255,255,255,.35);font-size:9px;">Ablehnen</span>
+                      </div>
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                        <button onclick="phoneAnswer()" style="width:44px;height:44px;border-radius:50%;background:#00b87a;border:none;cursor:pointer;font-size:17px;box-shadow:0 4px 14px rgba(0,184,122,0.5);animation:pulseGreen 2s infinite;">📞</button>
+                        <span style="color:rgba(255,255,255,.8);font-size:9px;">Annehmen</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="phoneActive" style="display:none;flex:1;flex-direction:column;position:relative;">
+                    <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px;">
+                      <div style="width:28px;height:28px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
+                      <div><div style="font-size:11px;font-weight:700;color:white;">Xyphone Bot</div><div style="font-size:8px;color:rgba(255,255,255,.4);">Pizzeria Latina</div></div>
+                      <div id="phoneTimer" style="margin-left:auto;font-family:monospace;font-size:9px;color:#00b87a;">00:00</div>
+                    </div>
+                    <div id="phoneMsgs" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:0;padding-bottom:48px;"></div>
+                    <!-- Mic-Indikator: zeigt wenn KI zuhört -->
+                    <div id="phoneMicIndicator" style="display:none;justify-content:center;align-items:center;gap:4px;padding:5px 0;">
+                      <span style="font-size:13px;">&#127899;&#65039;</span>
+                      <span style="font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.05em;">SPRICH JETZT</span>
+                      <span style="width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:micPulse .8s ease-in-out infinite;"></span>
+                    </div>
+                    <div style="position:absolute;bottom:4px;left:0;right:0;display:flex;justify-content:center;">
+                      <button onclick="phoneEnd()" style="width:40px;height:40px;border-radius:50%;background:#e84545;border:none;cursor:pointer;font-size:15px;box-shadow:0 2px 10px rgba(232,69,69,0.5);">📵</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,184,122,0.12);border:1px solid rgba(0,184,122,0.3);border-radius:9px;padding:7px 12px;">
+                <span>☝️</span><span style="font-size:12px;font-weight:700;color:#00c48c;">Grünen Hörer drücken!</span>
+              </div>
+              <div id="phoneStatus" style="font-size:11px;color:rgba(240,240,255,.35);margin-top:5px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHATBOT -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:1.5rem;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">💬 Website-Chatbot</div>
+          <div style="font-size:1.1rem;font-weight:800;color:white;margin-bottom:0.4rem;">Pizzeria Latina</div>
+          <div style="color:rgba(240,240,255,0.4);font-size:0.82rem;margin-bottom:1.2rem;">KI-Assistent · antwortet sofort</div>
+          <div class="chatbox" id="chatbox">
+            <div class="chatbox-header">
+              <div class="chatbox-avatar">🍕</div>
+              <div><strong>Pizzeria Latina Bot</strong><small>Online · KI-gestützt</small></div>
+            </div>
+            <div class="chatbox-messages" id="messages">
+              <div class="msg bot"><div class="msg-bubble">Ciao! 🍕 Willkommen bei Pizzeria Latina! Wie kann ich dir helfen?</div></div>
+            </div>
+            <div class="chatbox-input">
+              <input type="text" id="userInput" placeholder="Schreib eine Frage..." />
+              <button onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+          <div style="margin-top:0.8rem;">
+            <div style="font-size:11px;color:rgba(240,240,255,0.3);margin-bottom:0.5rem;">Frag zum Beispiel:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Öffnungszeiten</span>
+              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Was kostet eine Pizza</span>
+              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Liefert ihr</span>
+              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Wo seid ihr</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PAKETE -->
+  <section id="pakete" class="pakete">
+    <div class="container">
+      <h2>Telefon-Bot Pakete</h2>
+      <p class="subtitle">Einmalige Einrichtung, monatliche Flatrate — keine Überraschungen.</p>
+      <div class="pakete-grid">
+        <div class="paket">
+          <h3>Starter</h3>
+          <div class="preis">€ 499<span>/einmalig</span></div>
+          <div class="preis-monthly">+ € 79 <span>/Monat</span></div>
+          <p class="paket-desc">Ideal für den Einstieg — dein Bot ist in 48h live.</p>
+          <ul>
+            <li>✅ KI-Telefon-Bot</li>
+            <li>✅ Echte Telefonnummer</li>
+            <li>✅ Bis zu 200 Anrufe/Monat</li>
+            <li>✅ Fragen & Antworten individuell</li>
+            <li>✅ Gesprächsprotokoll</li>
+            <li>❌ Terminbuchung</li>
+          </ul>
+          <a href="#" onclick="openModal();return false;" class="btn-primary">🚀 Bot einrichten</a>
+        </div>
+        <div class="paket featured">
+          <div class="paket-badge">Empfohlen</div>
+          <h3>Professional</h3>
+          <div class="preis">€ 799<span>/einmalig</span></div>
+          <div class="preis-monthly">+ € 129 <span>/Monat</span></div>
+          <p class="paket-desc">Mit automatischer Terminbuchung — dein Bot arbeitet komplett selbstständig.</p>
+          <ul>
+            <li>✅ KI-Telefon-Bot</li>
+            <li>✅ Echte Telefonnummer</li>
+            <li>✅ Unbegrenzte Anrufe</li>
+            <li>✅ Automatische Terminbuchung</li>
+            <li>✅ SMS-Bestätigung an Kunden</li>
+            <li>✅ Weiterleitung bei Bedarf</li>
+            <li>✅ 1 Telefonleitung inklusive</li>
+            <li>➕ 2. &amp; 3. Leitung gegen Aufpreis</li>
+            <li>✅ Priorität-Support</li>
+            <li>🖨️ Thermodrucker optional zubuchbar</li>
+          </ul>
+          <a href="#" onclick="openModal();return false;" class="btn-primary">🚀 Bot einrichten</a>
+        </div>
+        <div class="paket">
+          <h3>Komplett-Paket</h3>
+          <div class="preis">€ 1.499<span>/einmalig</span></div>
+          <div class="preis-monthly">+ € 199 <span>/Monat</span></div>
+          <p class="paket-desc">Telefon-Bot + Website + Chatbot — alles aus einer Hand.</p>
+          <ul>
+            <li>✅ Alles aus Professional</li>
+            <li>✅ Bis zu 3 Telefonleitungen</li>
+            <li>✅ Website-Chatbot</li>
+            <li>✅ Professionelle Website</li>
+            <li>✅ Online-Terminbuchung</li>
+            <li>🖨️ Thermodrucker inklusive — Bestellungen direkt ausdrucken</li>
+            <li>✅ Dedizierter Support</li>
+          </ul>
+          <a href="#" onclick="openModal();return false;" class="btn-secondary">Bot einrichten</a>
+        </div>
+      </div>
+
+      <!-- BIG CTA -->
+      <div style="margin-top:3rem;text-align:center;">
+        <button onclick="openModal()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;border-radius:16px;padding:1.2rem 3rem;font-size:1.2rem;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 40px rgba(124,58,237,0.5);letter-spacing:-0.01em;transition:all 0.2s;display:inline-flex;align-items:center;gap:12px;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 50px rgba(124,58,237,0.65)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 40px rgba(124,58,237,0.5)'">
+          <span style="font-size:1.5rem;">🤖</span> Erstelle jetzt deinen eigenen Bot
+        </button>
+        <div style="margin-top:0.8rem;color:rgba(240,240,255,0.4);font-size:0.88rem;">Kostenlos & unverbindlich · Fertig in 48h</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BEWERTUNGEN -->
+  <section style="padding:4rem 0;background:rgba(124,58,237,0.04);border-top:1px solid rgba(124,58,237,0.15);border-bottom:1px solid rgba(124,58,237,0.15);overflow:hidden;">
+    <style>
+      @keyframes marquee-left {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .review-track {
+        display: flex;
+        gap: 1.5rem;
+        width: max-content;
+        animation: marquee-left 35s linear infinite;
+      }
+      .review-track:hover { animation-play-state: paused; }
+      .review-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(124,58,237,0.25);
+        border-radius: 16px;
+        padding: 1.5rem;
+        width: 300px;
+        flex-shrink: 0;
+      }
+    </style>
+    <h2 style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">Was unsere Kunden sagen</h2>
+    <p style="text-align:center;color:rgba(240,240,255,0.5);margin-bottom:2.5rem;font-size:0.95rem;">Echte Erfahrungen lokaler Unternehmer</p>
+    <div style="position:relative;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:80px;background:linear-gradient(to right,#0f0f1e,transparent);z-index:2;"></div>
+      <div style="position:absolute;right:0;top:0;bottom:0;width:80px;background:linear-gradient(to left,#0f0f1e,transparent);z-index:2;"></div>
+      <div class="review-track">
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Seit dem Bot ruft kaum noch jemand direkt an — alles läuft automatisch. Wir sparen locker 2 Stunden täglich.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">MR</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Mario Rossi</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Pizzeria Da Mario, Frankfurt</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Der Bot bucht Termine rund um die Uhr — auch nachts. Meine Kundinnen lieben es, dass sie nicht mehr warten müssen.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a070);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">SK</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Sandra Klein</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Friseursalon Haarzeit, Marburg</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Einrichtung war in einem Tag erledigt. Xyphone hat alles übernommen — ich musste nur Ja sagen. Absolute Empfehlung.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">TW</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Thomas Weber</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Elektriker Weber, Gießen</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Früher haben wir 30% aller Anrufe verpasst. Jetzt ist das null. Der Bot klingt so natürlich, Kunden merken gar nichts.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#be185d);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">LB</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Laura Bauer</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Nagelstudio LB Beauty, Köln</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Besonders gut: Der Bot versteht Dialekt! Unsere Kunden aus Bayern reden wie immer — und alles klappt perfekt.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">HM</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Hans Meier</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Metzgerei Meier, München</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Mein Team muss sich nicht mehr um Telefonbestellungen kümmern. Die kommen einfach rein — fertig. Spart uns enorm viel Stress.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#10b981,#047857);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">AP</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Ahmed Polat</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Döner Palace, Hamburg</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Als Selbstständige war Telefonieren mein größter Zeitfresser. Jetzt läuft alles über den Bot — ich hab endlich Zeit für meine Kunden vor Ort.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">NF</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Nina Fischer</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Kosmetikstudio Glow, Stuttgart</div></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Wir haben den Bot ausprobiert und waren nach einer Woche überzeugt. ROI in weniger als 2 Monaten. Einfach genial.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f97316,#c2410c);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">KS</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Klaus Schneider</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Autohaus Schneider, Dortmund</div></div>
+          </div>
+        </div>
+
+        <!-- Duplikat für nahtloses Loop -->
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Seit dem Bot ruft kaum noch jemand direkt an — alles läuft automatisch. Wir sparen locker 2 Stunden täglich.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">MR</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Mario Rossi</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Pizzeria Da Mario, Frankfurt</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Der Bot bucht Termine rund um die Uhr — auch nachts. Meine Kundinnen lieben es, dass sie nicht mehr warten müssen.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a070);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">SK</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Sandra Klein</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Friseursalon Haarzeit, Marburg</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Einrichtung war in einem Tag erledigt. Xyphone hat alles übernommen — ich musste nur Ja sagen. Absolute Empfehlung.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">TW</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Thomas Weber</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Elektriker Weber, Gießen</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Früher haben wir 30% aller Anrufe verpasst. Jetzt ist das null. Der Bot klingt so natürlich, Kunden merken gar nichts.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#be185d);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">LB</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Laura Bauer</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Nagelstudio LB Beauty, Köln</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Besonders gut: Der Bot versteht Dialekt! Unsere Kunden aus Bayern reden wie immer — und alles klappt perfekt.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">HM</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Hans Meier</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Metzgerei Meier, München</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Mein Team muss sich nicht mehr um Telefonbestellungen kümmern. Die kommen einfach rein — fertig. Spart uns enorm viel Stress.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#10b981,#047857);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">AP</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Ahmed Polat</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Döner Palace, Hamburg</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Als Selbstständige war Telefonieren mein größter Zeitfresser. Jetzt läuft alles über den Bot — ich hab endlich Zeit für meine Kunden vor Ort.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">NF</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Nina Fischer</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Kosmetikstudio Glow, Stuttgart</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div style="margin-bottom:0.8rem;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:0.92rem;color:rgba(240,240,255,0.8);line-height:1.6;margin-bottom:1rem;">&ldquo;Wir haben den Bot ausprobiert und waren nach einer Woche überzeugt. ROI in weniger als 2 Monaten. Einfach genial.&rdquo;</p>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f97316,#c2410c);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">KS</div>
+            <div><div style="font-weight:700;font-size:0.9rem;">Klaus Schneider</div><div style="font-size:0.78rem;color:rgba(240,240,255,0.4);">Autohaus Schneider, Dortmund</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="kontakt" class="kontakt">
+    <div class="container">
+      <h2>Kostenlose Demo für dein Business</h2>
+      <p class="subtitle">Wir melden uns innerhalb von 24–48 Stunden mit deiner persönlichen Bot-Demo — kostenlos &amp; unverbindlich.</p>
+      <form class="kontakt-form" action="https://api.web3forms.com/submit" method="POST" onsubmit="submitForm(event)">
+        <input type="hidden" name="access_key" value="57ca5d37-2f8b-4887-9910-b246aaa191df">
+        <input type="hidden" name="subject" value="Neue Demo-Anfrage über xyphone.de">
+        <div class="form-row">
+          <input type="text" name="name" placeholder="Dein Name" required />
+          <input type="text" name="unternehmen" placeholder="Unternehmen" required />
+        </div>
+        <div class="form-row">
+          <input type="email" name="email" placeholder="E-Mail" required />
+          <input type="tel" name="telefon" placeholder="Telefon (optional)" />
+        </div>
+        <select name="interesse">
+          <option value="">Deine Branche?</option>
+          <option>💇 Friseur / Beauty-Salon</option>
+          <option>Arztpraxis / Therapeut</option>
+          <option>Restaurant / Café</option>
+          <option>Handwerker / Dienstleister</option>
+          <option>Autowerkstatt</option>
+          <option>Fitnessstudio / Sport</option>
+          <option>Andere Branche</option>
+        </select>
+        <textarea name="nachricht" placeholder="Kurz beschreiben: Wie viele Anrufe bekommst du täglich, und was fragen Kunden am häufigsten?" rows="4"></textarea>
+        <button type="submit" class="btn-primary">📞 Kostenlose Demo anfragen ➤</button>
+      </form>
+      <div id="form-success" class="form-success" style="display:none;">
+        ✅ Danke! Wir melden uns bald bei dir.
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="padding:5rem 0;">
+    <div class="container" style="max-width:800px;margin:0 auto;padding:0 24px;">
+      <h2 style="text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">Häufige Fragen</h2>
+      <p style="text-align:center;color:rgba(240,240,255,0.5);margin-bottom:3rem;font-size:0.95rem;">Alles was du wissen möchtest</p>
+      <style>
+        .faq-item { border-bottom:1px solid rgba(124,58,237,0.2); }
+        .faq-q { width:100%;background:none;border:none;color:white;font-family:inherit;font-size:1rem;font-weight:600;text-align:left;padding:1.2rem 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem; }
+        .faq-q:hover { color:#a78bfa; }
+        .faq-arrow { font-size:1.1rem;transition:transform 0.3s;flex-shrink:0; }
+        .faq-a { max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s;color:rgba(240,240,255,0.65);font-size:0.95rem;line-height:1.7; }
+        .faq-item.open .faq-arrow { transform:rotate(180deg); }
+        .faq-item.open .faq-a { max-height:300px;padding-bottom:1.2rem; }
+      </style>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Wie lange dauert die Einrichtung? <span class="faq-arrow">⌄</span></button><div class="faq-a">In den meisten Fällen ist dein Bot innerhalb von 2–4 Werktagen einsatzbereit. Wir übernehmen die komplette Einrichtung — du musst nichts Technisches wissen oder selbst konfigurieren.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Brauche ich eine neue Telefonnummer? <span class="faq-arrow">⌄</span></button><div class="faq-a">Nein. Wir können den Bot auf deine bestehende Nummer aufschalten. Alternativ richten wir eine neue Nummer ein — ganz wie du möchtest.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Klingt der Bot wie ein Mensch? <span class="faq-arrow">⌄</span></button><div class="faq-a">Ja. Wir nutzen modernste Sprachmodelle — der Bot klingt natürlich, antwortet flüssig und versteht auch Dialekt. Die meisten Anrufer merken keinen Unterschied zu einem echten Mitarbeiter.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Was passiert wenn der Bot etwas nicht weiß? <span class="faq-arrow">⌄</span></button><div class="faq-a">Der Bot sagt ehrlich, dass er die Frage notiert und jemand zurückruft. Du erhältst sofort eine Benachrichtigung — kein Anruf geht verloren.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Kann ich den Bot jederzeit anpassen? <span class="faq-arrow">⌄</span></button><div class="faq-a">Ja. Neue Öffnungszeiten, Preise, Angebote — schick uns eine Nachricht und wir aktualisieren den Bot innerhalb weniger Tage.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Wie ist der Vertrag geregelt? <span class="faq-arrow">⌄</span></button><div class="faq-a">Monatlich kündbar. Keine langen Laufzeiten, keine versteckten Kosten. Du zahlst die einmalige Einrichtungsgebühr und dann monatlich — fertig.</div></div>
+      <script>function toggleFaq(btn){const item=btn.closest('.faq-item');const isOpen=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));if(!isOpen)item.classList.add('open');}</script>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="logo">🤖 Xyphone</div>
+        <p>KI-Telefon-Bot für lokale Unternehmen</p>
+        <p style="opacity:0.4;font-size:0.8rem;margin-top:0.5rem;">© 2026 Xyphone &mdash; Gegründet von Alwa</p>
+        <p style="opacity:0.5;font-size:0.8rem;margin-top:0.3rem;">Bei Fragen: <a href="mailto:xypherxai@gmail.com" style="color:#a78bfa;text-decoration:none;">xypherxai@gmail.com</a></p>
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;">
+          <a href="#impressum" onclick="document.getElementById('impressum-modal').style.display='flex'" style="color:rgba(240,240,255,0.4);font-size:0.8rem;text-decoration:none;cursor:pointer;">Impressum</a>
+          <a href="#datenschutz" onclick="document.getElementById('datenschutz-modal').style.display='flex';return false;" style="color:rgba(240,240,255,0.4);font-size:0.8rem;text-decoration:none;cursor:pointer;">Datenschutz</a>
+          <a href="#faq" style="color:rgba(240,240,255,0.4);font-size:0.8rem;text-decoration:none;">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- DATENSCHUTZ MODAL -->
+  <div id="datenschutz-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#0f0f1e;border:1px solid rgba(124,58,237,0.3);border-radius:24px;max-width:600px;width:100%;padding:2.5rem;position:relative;max-height:85vh;overflow-y:auto;">
+      <button onclick="document.getElementById('datenschutz-modal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.4rem;cursor:pointer;">&times;</button>
+      <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Datenschutzerklärung</h2>
+      <div style="color:rgba(240,240,255,0.7);line-height:1.8;font-size:0.92rem;">
+        <p><strong>1. Verantwortlicher</strong><br/>Fwaeh Xypher, Zur Wolfskaute 2, 35216 Biedenkopf<br/>E-Mail: xypherxai@gmail.com</p>
+        <p><strong>2. Erhobene Daten</strong><br/>Beim Ausfüllen des Kontaktformulars werden Name, E-Mail-Adresse, Telefonnummer sowie Angaben zu Ihrem Unternehmen erhoben. Diese Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage verwendet.</p>
+        <p><strong>3. Weitergabe an Dritte</strong><br/>Ihre Daten werden nicht an Dritte weitergegeben, verkauft oder vermietet. Die Übermittlung erfolgt verschlüsselt über HTTPS.</p>
+        <p><strong>4. Speicherdauer</strong><br/>Ihre Daten werden gelöscht, sobald sie für den Zweck der Erhebung nicht mehr erforderlich sind und keine gesetzlichen Aufbewahrungspflichten bestehen.</p>
+        <p><strong>5. Ihre Rechte</strong><br/>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer personenbezogenen Daten gemäß DSGVO. Kontakt: xypherxai@gmail.com</p>
+        <p><strong>6. Hosting</strong><br/>Diese Website wird über Netlify (USA) gehostet. Es gilt die Datenschutzerklärung von Netlify: netlify.com/privacy</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPRESSUM MODAL -->
+  <div id="impressum-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#0f0f1e;border:1px solid rgba(124,58,237,0.3);border-radius:24px;max-width:560px;width:100%;padding:2.5rem;position:relative;max-height:90vh;overflow-y:auto;">
+      <button onclick="document.getElementById('impressum-modal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.4rem;cursor:pointer;">&times;</button>
+      <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Impressum</h2>
+      <p style="color:rgba(240,240,255,0.7);line-height:1.8;font-size:0.95rem;">
+        <strong>Angaben gemäß § 5 TMG</strong><br/><br/>
+        Fwaeh Xypher<br/>
+        Zur Wolfskaute 2<br/>
+        35216 Biedenkopf<br/><br/>
+        <strong>Kontakt</strong><br/>
+        E-Mail: <a href="mailto:xypherxai@gmail.com" style="color:#a78bfa;">xypherxai@gmail.com</a><br/><br/>
+        <strong>Haftungsausschluss</strong><br/>
+        Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir keine Gewähr.<br/><br/>
+        <strong>Urheberrecht</strong><br/>
+        Die durch den Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem deutschen Urheberrecht.
+      </p>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+
+  <!-- ONBOARDING MODAL -->
+  <div class="modal-overlay" id="onboardingModal" onclick="closeModalOnBg(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+
+      <!-- PROGRESS -->
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:2rem;" id="mProgressBar">
+        <div class="m-dot active" id="mdot1" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid var(--primary);color:white;background:var(--primary);box-shadow:0 0 16px rgba(124,58,237,0.5);flex-shrink:0;">1</div>
+        <div id="mline1" style="flex:1;height:2px;background:rgba(124,58,237,0.15);"></div>
+        <div id="mdot2" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid rgba(124,58,237,0.3);color:rgba(240,240,255,0.4);background:rgba(255,255,255,0.04);flex-shrink:0;">2</div>
+        <div id="mline2" style="flex:1;height:2px;background:rgba(124,58,237,0.15);"></div>
+        <div id="mdot3" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid rgba(124,58,237,0.3);color:rgba(240,240,255,0.4);background:rgba(255,255,255,0.04);flex-shrink:0;">3</div>
+        <div id="mline3" style="flex:1;height:2px;background:rgba(124,58,237,0.15);"></div>
+        <div id="mdot4" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid rgba(124,58,237,0.3);color:rgba(240,240,255,0.4);background:rgba(255,255,255,0.04);flex-shrink:0;">4</div>
+        <div id="mline4" style="flex:1;height:2px;background:rgba(124,58,237,0.15);"></div>
+        <div id="mdot5" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid rgba(124,58,237,0.3);color:rgba(240,240,255,0.4);background:rgba(255,255,255,0.04);flex-shrink:0;">✓</div>
+      </div>
+
+      <!-- STEP 1: Branche -->
+      <div id="mstep1" class="mstep">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:1rem;">Schritt 1 von 4</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.03em;">Was ist dein Business?</h3>
+        <p style="color:rgba(240,240,255,0.5);font-size:0.9rem;margin-bottom:1.5rem;">Wähle deine Branche — wir passen den Bot genau darauf an.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;">
+          <div class="mpill" onclick="mSelectBranche(this,'Friseur / Beauty')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Friseur</div>
+          <div class="mpill" onclick="mSelectBranche(this,'Arztpraxis')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Arztpraxis</div>
+          <div class="mpill" onclick="mSelectBranche(this,'Restaurant / Pizzeria')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Restaurant</div>
+          <div class="mpill" onclick="mSelectBranche(this,'Handwerker')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Handwerker</div>
+          <div class="mpill" onclick="mSelectBranche(this,'Autowerkstatt')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Autowerkstatt</div>
+          <div class="mpill" onclick="mSelectBranche(this,'Andere')" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 0.5rem;text-align:center;font-size:0.85rem;font-weight:500;color:rgba(240,240,255,0.55);cursor:pointer;transition:all 0.2s;">Andere</div>
+        </div>
+        <div id="mAndereField" style="display:none;margin-top:0.8rem;">
+          <input id="mAndereText" type="text" placeholder="Deine Branche..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" />
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;">
+          <button onclick="mGoTo(2)" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;border-radius:10px;padding:0.8rem 1.8rem;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,0.4);">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Business-Info -->
+      <div id="mstep2" class="mstep" style="display:none;">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:1rem;">Schritt 2 von 4</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.03em;">Dein Business</h3>
+        <p style="color:rgba(240,240,255,0.5);font-size:0.9rem;margin-bottom:1.5rem;">Der Bot lernt alles über dich — so kann er deine Kunden perfekt bedienen.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem;">
+          <div><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Name *</label><input id="mbizName" type="text" placeholder="z.B. Pizzeria Latina" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+          <div><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Stadt</label><input id="mbizCity" type="text" placeholder="z.B. München" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+        </div>
+        <div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Website <span style="font-weight:400;opacity:0.5;">(optional)</span></label><input id="mbizWebsite" type="url" placeholder="z.B. www.pizzeria-latina.de" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+        <div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Öffnungszeiten</label><textarea id="mbizHours" rows="3" placeholder="Mo–Fr: 09:00–18:00&#10;Sa: 09:00–14:00&#10;So: Geschlossen" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;"></textarea></div>
+        <div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Ruhetag(e)</label><input id="mbizClosedDays" type="text" placeholder="z.B. Montag, Dienstag" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+          <button onclick="mGoTo(1)" style="background:transparent;color:rgba(240,240,255,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.8rem 1.4rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">← Zurück</button>
+          <button onclick="mGoTo(3)" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;border-radius:10px;padding:0.8rem 1.8rem;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,0.4);">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Leistungen -->
+      <div id="mstep3" class="mstep" style="display:none;">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:1rem;">Schritt 3 von 4</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.03em;">Leistungen & Infos</h3>
+        <p style="color:rgba(240,240,255,0.5);font-size:0.9rem;margin-bottom:1.5rem;">Was soll dein Bot wissen? Je mehr du angibst, desto besser antwortet er.</p>
+        <!-- Dynamische Felder je nach Branche -->
+        <div id="mstep3fields"></div>
+        <div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Häufige Fragen deiner Kunden <span style="font-weight:400;opacity:0.5;">(optional)</span></label><textarea id="mbizFaq" rows="3" placeholder="z.B.: Brauche ich einen Termin? Welche Zahlungsmittel akzeptieren Sie?" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;"></textarea></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+          <button onclick="mGoTo(2)" style="background:transparent;color:rgba(240,240,255,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.8rem 1.4rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">← Zurück</button>
+          <button onclick="mGoTo(4)" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;border-radius:10px;padding:0.8rem 1.8rem;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,0.4);">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Kontakt -->
+      <div id="mstep4" class="mstep" style="display:none;">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:1rem;">Schritt 4 von 4</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.03em;">Fast geschafft! 🎉</h3>
+        <p style="color:rgba(240,240,255,0.5);font-size:0.9rem;margin-bottom:1.5rem;">Wo sollen wir uns melden wenn dein Bot fertig ist?</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem;">
+          <div><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Dein Name *</label><input id="mcontactName" type="text" placeholder="Max Mustermann" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+          <div><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">E-Mail *</label><input id="mcontactEmail" type="email" placeholder="max@beispiel.de" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+        </div>
+        <div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Telefon</label><input id="mcontactPhone" type="tel" placeholder="+49 176 ..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;" /></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+          <button onclick="mGoTo(3)" style="background:transparent;color:rgba(240,240,255,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.8rem 1.4rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">← Zurück</button>
+          <button onclick="mSubmit()" id="mSubmitBtn" style="background:linear-gradient(135deg,#00c48c,#00a070);color:white;border:none;border-radius:10px;padding:0.8rem 1.8rem;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(0,196,140,0.4);">🚀 Bot bestellen</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Success -->
+      <div id="mstep5" class="mstep" style="display:none;text-align:center;padding:1rem 0;">
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,#00d4aa,#00a070);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 1.2rem;box-shadow:0 0 30px rgba(0,212,170,0.4);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);">✅</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">Danke! <span id="mSuccessName"></span></h3>
+        <p style="color:rgba(240,240,255,0.5);margin-bottom:1.5rem;line-height:1.7;">Wir melden uns innerhalb von <strong style="color:white;">2–4 Werktagen</strong> mit deiner persönlichen Bot-Demo.</p>
+        <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(240,240,255,0.6);border-radius:10px;padding:0.8rem 1.5rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">Schließen</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  let mStep = 1;
+  let mBranche = '';
+
+  function openModal() {
+    document.getElementById('onboardingModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('onboardingModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeModalOnBg(e) {
+    if (e.target === document.getElementById('onboardingModal')) closeModal();
+  }
+
+  function handleMenuPhoto(input) {
+    const files = Array.from(input.files).slice(0, 5);
+    if (!files.length) return;
+    const nameEl = document.getElementById('mbizMenuPhotoName');
+    nameEl.innerHTML = files.map(f => '✅ ' + f.name).join('<br>');
+    nameEl.style.display = 'block';
+  }
+
+  function mSelectBranche(el, name) {
+    document.querySelectorAll('.mpill').forEach(p => {
+      p.style.borderColor = 'rgba(255,255,255,0.1)';
+      p.style.color = 'rgba(240,240,255,0.55)';
+      p.style.background = 'rgba(255,255,255,0.04)';
+    });
+    el.style.borderColor = '#7c3aed';
+    el.style.color = 'white';
+    el.style.background = 'rgba(124,58,237,0.2)';
+    mBranche = name;
+    document.getElementById('mAndereField').style.display = name === '❓ Andere' ? 'block' : 'none';
+  }
+
+  // ── Branchenspezifische Felder für Schritt 3 ────────────────────────────
+  const brancheFields = {
+    restaurant: {
+      services: { label: 'Speisekarte & Preise', ph: 'z.B.:\n– Margherita: 8€\n– Salami: 9€\n– Pasta Bolognese: 10€' },
+      extra: `<div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.6rem;">Service-Art</label><div style="display:flex;gap:0.6rem;"><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;flex:1;"><input type="checkbox" id="mbizDelivery" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Lieferung</span></label><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;flex:1;"><input type="checkbox" id="mbizPickup" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Abholung</span></label></div></div><div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Bestellzeiten <span style="opacity:.5;font-weight:400;">(optional)</span></label><input id="mbizOrderHours" type="text" placeholder="z.B. Mo–Sa: 11:00–22:00, So: 12:00–21:00" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;"/></div>`
+    },
+    friseur: {
+      services: { label: 'Leistungen & Preise', ph: 'z.B.:\n– Herrenschnitt: 25€\n– Damenschnitt: 40€\n– Färben ab: 60€' },
+      extra: `<div style="margin-bottom:0.8rem;"><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;"><input type="checkbox" id="mbizTermin" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Terminbuchung möglich</span></label></div>`
+    },
+    handwerker: {
+      services: { label: 'Leistungen', ph: 'z.B.:\n– Elektroinstallation\n– Reparaturen & Wartung\n– Notdienst 24/7' },
+      extra: `<div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Einzugsgebiet <span style="opacity:.5;font-weight:400;">(optional)</span></label><input id="mbizArea" type="text" placeholder="z.B. München + 30km Umkreis" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;"/></div><div style="margin-bottom:0.8rem;"><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;"><input type="checkbox" id="mbizEmergency" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Notfallservice verfügbar</span></label></div>`
+    },
+    arzt: {
+      services: { label: 'Fachrichtung & Leistungen', ph: 'z.B.:\n– Allgemeinmedizin\n– Vorsorgeuntersuchungen\n– Impfungen' },
+      extra: `<div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.6rem;">Abrechnungsart</label><div style="display:flex;gap:0.6rem;"><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;flex:1;"><input type="checkbox" id="mbizKasse" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Kassen</span></label><label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.7rem 1rem;cursor:pointer;flex:1;"><input type="checkbox" id="mbizPrivat" style="accent-color:#7c3aed;width:16px;height:16px;"/><span style="font-size:0.85rem;color:rgba(240,240,255,0.7);">Privat</span></label></div></div>`
+    },
+    fitness: {
+      services: { label: 'Kurse & Angebote', ph: 'z.B.:\n– Yoga: Mo/Mi/Fr 18:00\n– Spinning: Di/Do 19:00\n– Mitgliedschaft ab 29€/Monat' },
+      extra: ''
+    },
+    auto: {
+      services: { label: 'Leistungen', ph: 'z.B.:\n– Inspektion\n– TÜV-Vorbereitung\n– Reifenwechsel\n– Unfallreparatur' },
+      extra: `<div style="margin-bottom:0.8rem;"><label style="font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;">Akzeptierte Marken <span style="opacity:.5;font-weight:400;">(optional)</span></label><input id="mbizBrands" type="text" placeholder="z.B. VW, BMW, Mercedes, alle Marken" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;"/></div>`
+    },
+    default: {
+      services: { label: 'Leistungen & Angebote', ph: 'z.B.:\n– Beratung: 80€/Std\n– Wartungsvertrag\n– Express-Service' },
+      extra: ''
+    }
+  };
+
+  function getBrancheKey(branche) {
+    const b = (branche || '').toLowerCase();
+    if (b.includes('restaurant') || b.includes('pizza') || b.includes('cafe') || b.includes('imbiss') || b.includes('bistro')) return 'restaurant';
+    if (b.includes('friseur') || b.includes('beauty') || b.includes('kosmetik') || b.includes('nagelstudio')) return 'friseur';
+    if (b.includes('handwerker') || b.includes('elektriker') || b.includes('sanit') || b.includes('maler') || b.includes('schrein')) return 'handwerker';
+    if (b.includes('arzt') || b.includes('praxis') || b.includes('zahnarzt') || b.includes('therapeut') || b.includes('physio')) return 'arzt';
+    if (b.includes('fitness') || b.includes('gym') || b.includes('sport') || b.includes('yoga')) return 'fitness';
+    if (b.includes('auto') || b.includes('kfz') || b.includes('werkstatt') || b.includes('reifenservice')) return 'auto';
+    return 'default';
+  }
+
+  function renderStep3Fields() {
+    const key = getBrancheKey(mBranche);
+    const cfg = brancheFields[key] || brancheFields.default;
+    const inputStyle = 'width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.75rem 1rem;color:white;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;';
+    const labelStyle = 'font-size:0.82rem;font-weight:600;color:rgba(240,240,255,0.6);display:block;margin-bottom:0.4rem;';
+    document.getElementById('mstep3fields').innerHTML = `
+      <div style="margin-bottom:0.8rem;">
+        <label style="${labelStyle}">${cfg.services.label}</label>
+        <textarea id="mbizServices" rows="5" placeholder="${cfg.services.ph}" style="${inputStyle}"></textarea>
+      </div>
+      <div style="margin-bottom:0.8rem;">
+        <label style="${labelStyle}">Fotos hochladen <span style="font-weight:400;opacity:0.5;">(optional, bis zu 5 Bilder)</span></label>
+        <label style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.15);border-radius:10px;padding:0.85rem 1rem;cursor:pointer;">
+          <span style="font-size:1.2rem;">📷</span>
+          <span style="font-size:0.85rem;color:rgba(240,240,255,0.5);">Fotos hochladen (JPG, PNG, PDF)</span>
+          <input id="mbizMenuPhoto" type="file" accept="image/*,.pdf" multiple style="display:none;" onchange="handleMenuPhoto(this)" />
+        </label>
+        <div id="mbizMenuPhotoName" style="font-size:0.75rem;color:#a78bfa;margin-top:0.3rem;display:none;"></div>
+      </div>
+      ${cfg.extra}
+    `;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function mGoTo(step) {
+    if (step > mStep) {
+      if (mStep === 1 && !mBranche) { alert('Bitte wähle deine Branche.'); return; }
+      if (mStep === 2 && !document.getElementById('mbizName').value.trim()) { alert('Bitte gib den Namen deines Unternehmens an.'); return; }
+    }
+    if (step === 3) renderStep3Fields();
+    document.getElementById('mstep' + mStep).style.display = 'none';
+    mStep = step;
+    document.getElementById('mstep' + mStep).style.display = 'block';
+    mUpdateProgress();
+    document.querySelector('.modal-box').scrollTop = 0;
+  }
+
+  function mUpdateProgress() {
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById('mdot' + i);
+      if (!dot) continue;
+      if (i < mStep) {
+        dot.style.borderColor = '#00d4aa'; dot.style.color = '#00d4aa';
+        dot.style.background = 'rgba(0,212,170,0.1)'; dot.style.boxShadow = 'none';
+      } else if (i === mStep) {
+        dot.style.borderColor = '#7c3aed'; dot.style.color = 'white';
+        dot.style.background = '#7c3aed'; dot.style.boxShadow = '0 0 16px rgba(124,58,237,0.5)';
+      } else {
+        dot.style.borderColor = 'rgba(124,58,237,0.3)'; dot.style.color = 'rgba(240,240,255,0.4)';
+        dot.style.background = 'rgba(255,255,255,0.04)'; dot.style.boxShadow = 'none';
+      }
+    }
+    for (let i = 1; i <= 4; i++) {
+      const line = document.getElementById('mline' + i);
+      if (line) line.style.background = i < mStep ? '#00d4aa' : 'rgba(124,58,237,0.15)';
+    }
+  }
+
+  async function mSubmit() {
+    const name = document.getElementById('mcontactName').value.trim();
+    const email = document.getElementById('mcontactEmail').value.trim();
+    if (!name || !email) { alert('Bitte Name und E-Mail angeben.'); return; }
+    const btn = document.getElementById('mSubmitBtn');
+    btn.textContent = '⏳ Wird gesendet...';
+    btn.disabled = true;
+    try {
+const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: '57ca5d37-2f8b-4887-9910-b246aaa191df',
+          subject: 'Neue Xyphone Bot-Anfrage: ' + (document.getElementById('mbizName').value || name),
+          from_name: 'Xyphone Formular',
+          replyto: email,
+          botcheck: false,
+          branche: mBranche === '❓ Andere' ? document.getElementById('mAndereText').value : mBranche,
+          bizName: document.getElementById('mbizName').value,
+          bizCity: document.getElementById('mbizCity').value,
+          bizHours: document.getElementById('mbizHours').value,
+          services: document.getElementById('mbizServices').value,
+          faq: document.getElementById('mbizFaq').value,
+          contactName: name, contactEmail: email,
+          contactPhone: document.getElementById('mcontactPhone').value
+        })
+      });
+    } catch(e) {}
+    document.getElementById('mSuccessName').textContent = name + '!';
+    mGoTo(5);
+  }
+
+  // ESC key
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+
+  <style>
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+  @keyframes pulseGreen {
+    0%,100% { box-shadow: 0 4px 14px rgba(0,184,122,0.5); }
+    50% { box-shadow: 0 4px 24px rgba(0,184,122,0.9); transform: scale(1.08); }
+  }
+  @keyframes micPulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.5); }
+  }
+  </style>
+
+  <script>
+  // HINT PILLS
+  window.setHint = function(el) {
+    document.getElementById('userInput').value = el.textContent;
+    document.getElementById('userInput').focus();
+    sendMessage();
+  };
+
+  // TELEFON BOT → Skript-Demo
+  const phoneScript = [
+    { role:'bot', text:'Guten Tag! Hier ist Sofia, die KI-Assistentin der Pizzeria Latina. Wie kann ich Ihnen helfen?' },
+    { role:'user', text:'Hallo, ich möchte einen Tisch reservieren.' },
+    { role:'bot', text:'Sehr gerne! Für wann und wie viele Personen?' },
+    { role:'user', text:'Morgen Abend, 19 Uhr, für 4 Personen.' },
+    { role:'bot', text:'Einen Moment... ✅ Morgen 19:00 Uhr für 4 Personen ist verfügbar. Darf ich Ihren Namen?' },
+    { role:'user', text:'Müller, Thomas Müller.' },
+    { role:'bot', text:'Perfekt! Tisch für Herrn Müller, morgen 19:00 Uhr, 4 Personen — gebucht! 🍕 Wir freuen uns auf Sie!' },
+  ];
+  let phoneRunning = false, phoneTI = null, phoneSecs = 0;
+
+  window.phoneDecline = function() {
+    const idle = document.getElementById('phoneIdle');
+    idle.style.opacity = '0.3';
+    setTimeout(() => idle.style.opacity = '1', 500);
+  };
+
+  window.phoneEnd = function() {
+    clearInterval(phoneTI);
+    phoneRunning = false;
+    document.getElementById('phoneActive').style.display = 'none';
+    document.getElementById('phoneIdle').style.display = 'flex';
+    document.getElementById('phoneTimer').textContent = '00:00';
+    document.getElementById('phoneStatus').textContent = '';
+  };
+
+  function addPhoneBubble(role, text) {
+    const msgs = document.getElementById('phoneMsgs');
+    const d = document.createElement('div');
+    d.style.cssText = 'padding:6px 9px;border-radius:10px;font-size:11px;line-height:1.4;max-width:85%;';
+    if (role === 'bot') {
+      d.style.background = 'rgba(124,58,237,0.25)';
+      d.style.color = 'rgba(255,255,255,0.9)';
+      d.style.alignSelf = 'flex-start';
+    } else {
+      d.style.background = 'rgba(255,255,255,0.12)';
+      d.style.color = 'rgba(255,255,255,0.75)';
+      d.style.alignSelf = 'flex-end';
+    }
+    d.textContent = text;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function runScript(i) {
+    if (i >= phoneScript.length) { setTimeout(window.phoneEnd, 1500); return; }
+    const item = phoneScript[i];
+    const delay = i === 0 ? 700 : (item.role === 'bot' ? 1000 : 1800);
+    setTimeout(() => {
+      addPhoneBubble(item.role, item.text);
+      runScript(i + 1);
+    }, delay);
+  }
+
+  function startTimer() {
+    phoneSecs = 0;
+    phoneTI = setInterval(() => {
+      phoneSecs++;
+      const m = String(Math.floor(phoneSecs/60)).padStart(2,'0');
+      const s = String(phoneSecs%60).padStart(2,'0');
+      document.getElementById('phoneTimer').textContent = m+':'+s;
+    }, 1000);
+  }
+
+  window.phoneAnswer = async function() {
+    if (phoneRunning) return;
+    phoneRunning = true;
+    document.getElementById('phoneIdle').style.display = 'none';
+    document.getElementById('phoneActive').style.display = 'flex';
+    document.getElementById('phoneMsgs').innerHTML = '';
+    document.getElementById('phoneStatus').textContent = '🎙️ Mikrofon wird aktiviert...';
+    startTimer();
+
+    try {
+      // Mikrofon direkt anfragen — einzig zuverlässige Methode
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      window._phoneStream = stream;
+
+      // ElevenLabs echtes Gespräch
+      const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
+
+      // Aktuelles Datum & Uhrzeit in deutscher Zeitzone (Europe/Berlin)
+      const now = new Date();
+      const deDate = new Intl.DateTimeFormat('de-DE', {
+        timeZone: 'Europe/Berlin',
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      }).formatToParts(now);
+      const datumText = deDate.map(p => p.value).join('');
+      const uhrzeitText = new Intl.DateTimeFormat('de-DE', {
+        timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit'
+      }).format(now) + ' Uhr';
+
+      const conv = await mod.Conversation.startSession({
+        agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
+        conversationConfigOverride: {
+          agent: {
+            prompt: {
+              prompt: `Du bist der KI-Telefonassistent der Pizzeria Latina. Antworte auf Deutsch, kurz und freundlich. WICHTIG: Das aktuelle Datum ist exakt ${datumText}. Die aktuelle Uhrzeit ist exakt ${uhrzeitText} (Deutschland). Wenn jemand nach Datum oder Uhrzeit fragt, nenne IMMER diese Werte. Verwende niemals andere Daten oder Zeiten.`
+            },
+            first_message: `Guten Tag! Sie sind verbunden mit dem KI-Assistenten der Pizzeria Latina. Heute ist ${datumText}. Wie kann ich Ihnen helfen?`,
+            language: 'de'
+          }
+        },
+        onConnect: () => {
+          document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — einfach lossprechen!';
+          const ind = document.getElementById('phoneMicIndicator');
+          if (ind) ind.style.display = 'flex';
+        },
+        onDisconnect: () => { window.phoneEnd(); },
+        onError: (err) => {
+          console.warn('ElevenLabs Fehler, Demo-Modus:', err);
+          runScript(0);
+          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
+          const ind = document.getElementById('phoneMicIndicator');
+          if (ind) ind.style.display = 'none';
+        },
+        onModeChange: (m) => {
+          const ind = document.getElementById('phoneMicIndicator');
+          if (m.mode === 'speaking') {
+            document.getElementById('phoneStatus').textContent = '🤖 Bot spricht...';
+            if (ind) ind.style.display = 'none';
+          } else if (m.mode === 'listening') {
+            document.getElementById('phoneStatus').textContent = '🎙️ Jetzt sprechen!';
+            if (ind) ind.style.display = 'flex';
+          }
+        },
+        onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
+      });
+      window._phoneConv = conv;
+    } catch(e) {
+      // Mikrofon verweigert oder nicht verfügbar → Demo-Script
+      console.log('Kein Mikrofon, starte Demo-Script:', e.message);
+      document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
+      runScript(0);
+    }
+  };
+
+  const _origPhoneEnd = window.phoneEnd;
+  window.phoneEnd = function() {
+    if (window._phoneConv) { window._phoneConv.endSession(); window._phoneConv = null; }
+    // Mikrofon komplett stoppen
+    if (window._phoneStream) {
+      window._phoneStream.getTracks().forEach(t => t.stop());
+      window._phoneStream = null;
+    }
+    _origPhoneEnd();
+  };
+  </script>
+
+</body>
+</html>
