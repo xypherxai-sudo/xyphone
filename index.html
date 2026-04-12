@@ -241,18 +241,22 @@
                       <span style="font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.05em;">SPRICH JETZT</span>
                       <span style="width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:micPulse .8s ease-in-out infinite;"></span>
                     </div>
-                    <div style="position:absolute;bottom:4px;left:0;right:0;display:flex;justify-content:center;">
-                      <button onclick="phoneEnd()" style="width:40px;height:40px;border-radius:50%;background:#e84545;border:none;cursor:pointer;font-size:15px;box-shadow:0 2px 10px rgba(232,69,69,0.5);">📵</button>
-                    </div>
+
                   </div>
                 </div>
               </div>
             </div>
-            <div style="margin-top:12px;">
-              <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,184,122,0.12);border:1px solid rgba(0,184,122,0.3);border-radius:9px;padding:7px 12px;">
+            <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+              <!-- Idle: Hint -->
+              <div id="phoneHint" style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,184,122,0.12);border:1px solid rgba(0,184,122,0.3);border-radius:9px;padding:7px 12px;">
                 <span>☝️</span><span style="font-size:12px;font-weight:700;color:#00c48c;">Grünen Hörer drücken!</span>
               </div>
-              <div id="phoneStatus" style="font-size:11px;color:rgba(240,240,255,.35);margin-top:5px;"></div>
+              <!-- Active: Auflegen Button -->
+              <div id="phoneHangupBtn" style="display:none;flex-direction:column;align-items:center;gap:6px;">
+                <button onclick="phoneEnd()" style="width:56px;height:56px;border-radius:50%;background:#e84545;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 18px rgba(232,69,69,0.6);">📵</button>
+                <span style="font-size:11px;font-weight:700;color:#e84545;">Auflegen</span>
+              </div>
+              <div id="phoneStatus" style="font-size:11px;color:rgba(240,240,255,.35);margin-top:2px;"></div>
             </div>
           </div>
         </div>
@@ -1011,6 +1015,25 @@ const res = await fetch('https://api.web3forms.com/submit', {
   ];
   let phoneRunning = false, phoneTI = null, phoneSecs = 0;
 
+  function setPhoneUI(state) {
+    // state: 'idle' or 'active'
+    const hint = document.getElementById('phoneHint');
+    const hangup = document.getElementById('phoneHangupBtn');
+    const idle = document.getElementById('phoneIdle');
+    const active = document.getElementById('phoneActive');
+    if (state === 'active') {
+      if (hint) hint.style.display = 'none';
+      if (hangup) hangup.style.display = 'flex';
+      if (idle) idle.style.display = 'none';
+      if (active) active.style.display = 'flex';
+    } else {
+      if (hint) hint.style.display = 'inline-flex';
+      if (hangup) hangup.style.display = 'none';
+      if (idle) idle.style.display = 'flex';
+      if (active) active.style.display = 'none';
+    }
+  }
+
   window.phoneDecline = function() {
     const idle = document.getElementById('phoneIdle');
     idle.style.opacity = '0.3';
@@ -1020,8 +1043,7 @@ const res = await fetch('https://api.web3forms.com/submit', {
   window.phoneEnd = function() {
     clearInterval(phoneTI);
     phoneRunning = false;
-    document.getElementById('phoneActive').style.display = 'none';
-    document.getElementById('phoneIdle').style.display = 'flex';
+    setPhoneUI('idle');
     document.getElementById('phoneTimer').textContent = '00:00';
     document.getElementById('phoneStatus').textContent = '';
   };
@@ -1067,8 +1089,7 @@ const res = await fetch('https://api.web3forms.com/submit', {
   window.phoneAnswer = async function() {
     if (phoneRunning) return;
     phoneRunning = true;
-    document.getElementById('phoneIdle').style.display = 'none';
-    document.getElementById('phoneActive').style.display = 'flex';
+    setPhoneUI('active');
     document.getElementById('phoneMsgs').innerHTML = '';
     document.getElementById('phoneStatus').textContent = '🎙️ Mikrofon wird aktiviert...';
     startTimer();
