@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Xyphone – KI-Telefon-Bot für lokale Unternehmen</title>
   <meta name="description" content="Xyphone baut KI-Telefon-Bots für lokale Unternehmen. Nie wieder verpasste Anrufe — Ihr Bot nimmt ab, bucht Termine und beantwortet Fragen. 24/7, sofort erreichbar." />
-  <meta name="keywords" content="KI Telefon Bot, Telefonbot, KI Assistent, automatischer Anrufbeantworter, Terminbuchung, lokale Unternehmen, Chatbot, Sprachassistent" />
+  <meta name="keywords" content="KI Telefon Bot, Telefonbot, KI Assistent, automatischer Anrufbeantworter, Terminbuchung, lokale Unternehmen, Sprachassistent" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://xyphone.de/" />
   <!-- Open Graph -->
@@ -57,7 +57,6 @@
   .modal-box::-webkit-scrollbar { width: 4px; }
   .modal-box::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 4px; }
   </style>
-  <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 </head>
 <body>
 
@@ -208,8 +207,8 @@
   <section id="demo" class="demo-section">
     <div class="container">
       <h2>Probier es <span>live aus</span></h2>
-      <p class="subtitle">Telefon-Bot links — Chatbot rechts. Beide KI-gesteuert, beide sofort verfügbar.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+      <p class="subtitle">Probier den KI-Telefonassistenten live aus — drück den grünen Hörer und sprich.</p>
+      <div style="display:flex;justify-content:center;">
 
         <!-- ElevenLabs Widget (hidden, triggered by phone button) -->
         <elevenlabs-convai id="elWidget" agent-id="agent_8201knwkdyy8eekvjn3tyht0n081" style="display:none;"></elevenlabs-convai>
@@ -273,34 +272,6 @@
           </div>
         </div>
 
-        <!-- CHATBOT -->
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:1.5rem;">
-          <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.8rem;">💬 Bestellsystem</div>
-          <div style="font-size:1.1rem;font-weight:800;color:white;margin-bottom:0.4rem;">Pizzeria Latina</div>
-          <div style="color:rgba(240,240,255,0.4);font-size:0.82rem;margin-bottom:1.2rem;">KI-Assistent · antwortet sofort</div>
-          <div class="chatbox" id="chatbox">
-            <div class="chatbox-header">
-              <div class="chatbox-avatar">🍕</div>
-              <div><strong>Pizzeria Latina Bot</strong><small>Online · KI-gestützt</small></div>
-            </div>
-            <div class="chatbox-messages" id="messages">
-              <div class="msg bot"><div class="msg-bubble">Ciao! 🍕 Willkommen bei Pizzeria Latina! Wie kann ich dir helfen?</div></div>
-            </div>
-            <div class="chatbox-input">
-              <input type="text" id="userInput" placeholder="Schreib eine Frage..." />
-              <button onclick="sendMessage()">➤</button>
-            </div>
-          </div>
-          <div style="margin-top:0.8rem;">
-            <div style="font-size:11px;color:rgba(240,240,255,0.3);margin-bottom:0.5rem;">Frag zum Beispiel:</div>
-            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
-              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Öffnungszeiten</span>
-              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Was kostet eine Pizza</span>
-              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Liefert ihr</span>
-              <span onclick="setHint(this)" style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:4px 10px;font-size:12px;color:rgba(240,240,255,0.55);cursor:pointer;">Wo seid ihr</span>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -354,7 +325,7 @@
           <h3>Komplett-Paket</h3>
           <div class="preis">€ 1.699<span>/einmalig</span></div>
           <div class="preis-monthly">+ € 219 <span>/Monat</span></div>
-          <p class="paket-desc">Telefon-Bot + Website + Chatbot — alles aus einer Hand.</p>
+          <p class="paket-desc">Das komplette Rundum-Paket — alles inklusive, nichts fehlt.</p>
           <ul>
             <li>✅ Alles aus Professional</li>
             <li>✅ Bis zu 3 Telefonleitungen</li>
@@ -642,7 +613,6 @@
     </div>
   </div>
 
-  <script src="chat.js"></script>
 
   <!-- ONBOARDING MODAL -->
   <div class="modal-overlay" id="onboardingModal" onclick="closeModalOnBg(event)">
@@ -929,74 +899,6 @@ const res = await fetch('https://api.web3forms.com/submit', {
   </style>
 
   <script>
-  // HINT PILLS
-  window.setHint = function(el) {
-    document.getElementById('userInput').value = el.textContent;
-    document.getElementById('userInput').focus();
-    sendMessage();
-  };
-
-  // CHATBOT SEND MESSAGE
-  const chatResponses = [
-    { keys: ['öffnungszeit','oeffnungszeit','wann','uhr','geöffnet','offen'], reply: '🕐 Wir sind täglich von 11:00–22:00 Uhr für Sie geöffnet. Küche bis 21:30 Uhr. Montags haben wir Ruhetag.' },
-    { keys: ['pizza','preis','kostet','kosten','wie viel','wieviel'], reply: '🍕 Unsere Pizzen kosten zwischen 8,90€ und 14,50€. Margherita ab 8,90€, Salami 10,50€, Tonno 12,90€. Alle Preise auf unserer Speisekarte.' },
-    { keys: ['liefer','lieferung','liefert','bestellen','bestellung','abhol'], reply: '🚗 Ja, wir liefern! Lieferradius ca. 5 km, Mindestbestellwert 15€, Lieferzeit 30–45 Minuten. Abholung auch möglich — dann 10% Rabatt!' },
-    { keys: ['adresse','adress','wo','straße','findest','finden','ort','lage'], reply: '📍 Sie finden uns in der Musterstraße 42, 10115 Berlin. Parkmöglichkeiten direkt vor dem Restaurant. Nearest U-Bahn: Musterbahnhof.' },
-    { keys: ['reservier','tisch','buchung','buchen','platz'], reply: '✅ Gerne reservieren wir einen Tisch für Sie! Rufen Sie uns an: 030 1234567 oder schreiben Sie uns per E-Mail. Für Gruppen ab 8 Personen bitte 24h vorher reservieren.' },
-    { keys: ['speisekarte','menu','menü','angebot','gericht','essen'], reply: '📋 Wir haben Pizza, Pasta, Antipasti und frische Salate. Alle Gerichte werden frisch zubereitet. Glutenfreier Teig auf Anfrage erhältlich.' },
-    { keys: ['telefon','tel','nummer','anruf','rufen'], reply: '📞 Sie erreichen uns unter: 030 1234567. Unser KI-Bot ist 24/7 erreichbar — auch wenn das Restaurant geschlossen ist!' },
-    { keys: ['hallo','hi','hey','servus','moin','guten tag','ciao'], reply: 'Ciao! 👋 Schön, dass Sie da sind! Ich bin der KI-Assistent der Pizzeria Latina. Wie kann ich Ihnen helfen?' },
-    { keys: ['danke','super','toll','perfekt','klasse','dankeschön'], reply: '😊 Bitte sehr! Freut mich, dass ich helfen konnte. Noch etwas?' },
-  ];
-
-  const chatLog = document.getElementById('chatMessages') || document.querySelector('.chat-messages');
-
-  function addChatBubble(role, text) {
-    const chatBox = document.getElementById('messages');
-    if (!chatBox) return;
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    const bubble = document.createElement('div');
-    bubble.className = 'msg-bubble';
-    bubble.textContent = text;
-    div.appendChild(bubble);
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function getBotReply(msg) {
-    const lower = msg.toLowerCase();
-    for (const r of chatResponses) {
-      if (r.keys.some(k => lower.includes(k))) return r.reply;
-    }
-    return '🤖 Gute Frage! Für detaillierte Infos rufen Sie uns gerne an: 030 1234567. Unser KI-Telefon-Bot ist 24/7 erreichbar und hilft Ihnen sofort weiter!';
-  }
-
-  window.sendMessage = function() {
-    const input = document.getElementById('userInput');
-    if (!input) return;
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-    addChatBubble('user', msg);
-    // Typing indicator
-    const chatBox = document.getElementById('messages');
-    const typing = document.createElement('div');
-    typing.className = 'msg bot';
-    typing.innerHTML = '<div class="msg-bubble" style="opacity:0.6;">✍️ Schreibt...</div>';
-    if (chatBox) { chatBox.appendChild(typing); chatBox.scrollTop = chatBox.scrollHeight; }
-    setTimeout(() => {
-      if (typing.parentNode) typing.parentNode.removeChild(typing);
-      addChatBubble('bot', getBotReply(msg));
-    }, 800 + Math.random() * 600);
-  };
-
-  // Enter key support
-  document.addEventListener('DOMContentLoaded', function() {
-    const inp = document.getElementById('userInput');
-    if (inp) inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
-  });
-
   // TELEFON BOT → Skript-Demo
   const phoneScript = [
     { role:'bot', text:'Guten Tag! Hier ist Sofia, die KI-Assistentin der Pizzeria Latina. Wie kann ich Ihnen helfen?' },
