@@ -1095,24 +1095,8 @@ const res = await fetch('https://api.web3forms.com/submit', {
     startTimer();
 
     try {
-      // Mikrofon direkt anfragen — einzig zuverlässige Methode
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      window._phoneStream = stream;
-
-      // ElevenLabs echtes Gespräch
+      // ElevenLabs SDK kümmert sich selbst um das Mikrofon
       const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
-
-      // Aktuelles Datum & Uhrzeit in deutscher Zeitzone (Europe/Berlin)
-      const now = new Date();
-      const deDate = new Intl.DateTimeFormat('de-DE', {
-        timeZone: 'Europe/Berlin',
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-      }).formatToParts(now);
-      const datumText = deDate.map(p => p.value).join('');
-      const uhrzeitText = new Intl.DateTimeFormat('de-DE', {
-        timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit'
-      }).format(now) + ' Uhr';
-
       document.getElementById('phoneStatus').textContent = '🔌 Verbinde mit KI...';
 
       const conv = await mod.Conversation.startSession({
@@ -1125,7 +1109,7 @@ const res = await fetch('https://api.web3forms.com/submit', {
         onDisconnect: () => { window.phoneEnd(); },
         onError: (err) => {
           console.warn('ElevenLabs Fehler:', JSON.stringify(err));
-          document.getElementById('phoneStatus').textContent = '⚠️ KI-Verbindung fehlgeschlagen';
+          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
           runScript(0);
         },
         onModeChange: (m) => {
@@ -1144,7 +1128,7 @@ const res = await fetch('https://api.web3forms.com/submit', {
     } catch(e) {
       console.warn('Fehler:', e.name, e.message);
       if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-        document.getElementById('phoneStatus').textContent = '❌ Mikrofon blockiert — Zugriff erlauben!';
+        document.getElementById('phoneStatus').textContent = '❌ Mikrofon blockiert — im Browser erlauben!';
         setPhoneUI('idle');
         phoneRunning = false;
       } else {
