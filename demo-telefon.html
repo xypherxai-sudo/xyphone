@@ -650,7 +650,7 @@ async function startSofia() {
   try {
     const { Conversation } = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
     sofiaConversation = await Conversation.startSession({
-      agentId: 'agent_2401kn1xe7p0e5trn6bpdjqca9qd',
+      agentId: 'agent_2201knwamxxaf7hsgt36t5090xap',
       onConnect: () => {
         sofiaActive = true;
         document.getElementById('sofiaStatus').textContent = 'Verbunden ✅ — einfach sprechen!';
