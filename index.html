@@ -238,7 +238,7 @@
                       <div><div style="font-size:11px;font-weight:700;color:white;">Xyphone Bot</div><div style="font-size:8px;color:rgba(255,255,255,.4);">Pizzeria Latina</div></div>
                       <div id="phoneTimer" style="margin-left:auto;font-family:monospace;font-size:9px;color:#00b87a;">00:00</div>
                     </div>
-                    <div id="phoneMsgs" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:0;scroll-behavior:smooth;"></div>
+                    <div id="phoneMsgs" style="flex:1;overflow-y:auto;min-height:0;scroll-behavior:smooth;padding-right:2px;"></div>
                     <!-- Mic-Indikator: zeigt wenn KI zuhört -->
                     <div id="phoneMicIndicator" style="display:none;justify-content:center;align-items:center;gap:4px;padding:5px 0;">
                       <span style="font-size:13px;">&#127899;&#65039;</span>
@@ -1062,19 +1062,20 @@ const res = await fetch('https://api.web3forms.com/submit', {
 
   function addPhoneBubble(role, text) {
     const msgs = document.getElementById('phoneMsgs');
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;margin-bottom:6px;' + (role === 'bot' ? 'justify-content:flex-start;' : 'justify-content:flex-end;');
     const d = document.createElement('div');
-    d.style.cssText = 'padding:6px 9px;border-radius:10px;font-size:11px;line-height:1.4;max-width:85%;';
+    d.style.cssText = 'padding:6px 9px;border-radius:10px;font-size:11px;line-height:1.4;max-width:85%;word-break:break-word;';
     if (role === 'bot') {
       d.style.background = 'rgba(124,58,237,0.25)';
       d.style.color = 'rgba(255,255,255,0.9)';
-      d.style.alignSelf = 'flex-start';
     } else {
       d.style.background = 'rgba(255,255,255,0.12)';
       d.style.color = 'rgba(255,255,255,0.75)';
-      d.style.alignSelf = 'flex-end';
     }
     d.textContent = text;
-    msgs.appendChild(d);
+    wrap.appendChild(d);
+    msgs.appendChild(wrap);
     msgs.scrollTop = msgs.scrollHeight;
   }
 
