@@ -1092,17 +1092,22 @@ const res = await fetch('https://api.web3forms.com/submit', {
         timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit'
       }).format(now) + ' Uhr';
 
-      const conv = await mod.Conversation.startSession({
+      document.getElementById('phoneStatus').textContent = '🔌 Verbinde mit KI...';
+
+      // Get signed URL from ElevenLabs (avoids auth issues)
+      let signedUrl = null;
+      try {
+        const sigResp = await fetch('https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=agent_8201knwkdyy8eekvjn3tyht0n081', {
+          headers: { 'xi-api-key': 'sk_f1b4983a56f7e00aae4b879f3be08ad3a41aff94f843b1d7' }
+        });
+        const sigData = await sigResp.json();
+        signedUrl = sigData.signed_url;
+      } catch(sigErr) {
+        console.warn('Signed URL fetch failed:', sigErr);
+      }
+
+      const sessionOptions = {
         agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
-        conversationConfigOverride: {
-          agent: {
-            prompt: {
-              prompt: `Du bist der KI-Telefonassistent der Pizzeria Latina. Antworte auf Deutsch, kurz und freundlich. WICHTIG: Das aktuelle Datum ist exakt ${datumText}. Die aktuelle Uhrzeit ist exakt ${uhrzeitText} (Deutschland). Wenn jemand nach Datum oder Uhrzeit fragt, nenne IMMER diese Werte. Verwende niemals andere Daten oder Zeiten.`
-            },
-            first_message: `Guten Tag! Sie sind verbunden mit dem KI-Assistenten der Pizzeria Latina. Heute ist ${datumText}. Wie kann ich Ihnen helfen?`,
-            language: 'de'
-          }
-        },
         onConnect: () => {
           document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — einfach lossprechen!';
           const ind = document.getElementById('phoneMicIndicator');
@@ -1110,9 +1115,9 @@ const res = await fetch('https://api.web3forms.com/submit', {
         },
         onDisconnect: () => { window.phoneEnd(); },
         onError: (err) => {
-          console.warn('ElevenLabs Fehler, Demo-Modus:', err);
+          console.warn('ElevenLabs Fehler:', err);
+          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus (kein Mikrofon)';
           runScript(0);
-          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
           const ind = document.getElementById('phoneMicIndicator');
           if (ind) ind.style.display = 'none';
         },
@@ -1127,12 +1132,19 @@ const res = await fetch('https://api.web3forms.com/submit', {
           }
         },
         onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
-      });
+      };
+
+      if (signedUrl) sessionOptions.signedUrl = signedUrl;
+
+      const conv = await mod.Conversation.startSession(sessionOptions);
       window._phoneConv = conv;
     } catch(e) {
-      // Mikrofon verweigert oder nicht verfügbar → Demo-Script
-      console.log('Kein Mikrofon, starte Demo-Script:', e.message);
-      document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
+      console.warn('Telefon-Bot Fehler:', e.name, e.message);
+      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+        document.getElementById('phoneStatus').textContent = '❌ Mikrofon blockiert — bitte Zugriff erlauben';
+      } else {
+        document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
+      }
       runScript(0);
     }
   };
