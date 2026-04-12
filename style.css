@@ -383,7 +383,7 @@ h2 span {
 
 /* PAKETE */
 .pakete { background: transparent; }
-.pakete-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; align-items: start; }
+.pakete-grid { display: grid; grid-template-columns: repeat(2, minmax(280px, 420px)); gap: 1.4rem; align-items: start; justify-content: center; }
 .paket {
   background: var(--glass);
   border: 1px solid var(--glass-border);
