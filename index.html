@@ -938,6 +938,67 @@ const res = await fetch('https://api.web3forms.com/submit', {
     sendMessage();
   };
 
+  // CHATBOT SEND MESSAGE
+  const chatResponses = [
+    { keys: ['öffnungszeit','oeffnungszeit','wann','uhr','geöffnet','offen'], reply: '🕐 Wir sind täglich von 11:00–22:00 Uhr für Sie geöffnet. Küche bis 21:30 Uhr. Montags haben wir Ruhetag.' },
+    { keys: ['pizza','preis','kostet','kosten','wie viel','wieviel'], reply: '🍕 Unsere Pizzen kosten zwischen 8,90€ und 14,50€. Margherita ab 8,90€, Salami 10,50€, Tonno 12,90€. Alle Preise auf unserer Speisekarte.' },
+    { keys: ['liefer','lieferung','liefert','bestellen','bestellung','abhol'], reply: '🚗 Ja, wir liefern! Lieferradius ca. 5 km, Mindestbestellwert 15€, Lieferzeit 30–45 Minuten. Abholung auch möglich — dann 10% Rabatt!' },
+    { keys: ['adresse','adress','wo','straße','findest','finden','ort','lage'], reply: '📍 Sie finden uns in der Musterstraße 42, 10115 Berlin. Parkmöglichkeiten direkt vor dem Restaurant. Nearest U-Bahn: Musterbahnhof.' },
+    { keys: ['reservier','tisch','buchung','buchen','platz'], reply: '✅ Gerne reservieren wir einen Tisch für Sie! Rufen Sie uns an: 030 1234567 oder schreiben Sie uns per E-Mail. Für Gruppen ab 8 Personen bitte 24h vorher reservieren.' },
+    { keys: ['speisekarte','menu','menü','angebot','gericht','essen'], reply: '📋 Wir haben Pizza, Pasta, Antipasti und frische Salate. Alle Gerichte werden frisch zubereitet. Glutenfreier Teig auf Anfrage erhältlich.' },
+    { keys: ['telefon','tel','nummer','anruf','rufen'], reply: '📞 Sie erreichen uns unter: 030 1234567. Unser KI-Bot ist 24/7 erreichbar — auch wenn das Restaurant geschlossen ist!' },
+    { keys: ['hallo','hi','hey','servus','moin','guten tag','ciao'], reply: 'Ciao! 👋 Schön, dass Sie da sind! Ich bin der KI-Assistent der Pizzeria Latina. Wie kann ich Ihnen helfen?' },
+    { keys: ['danke','super','toll','perfekt','klasse','dankeschön'], reply: '😊 Bitte sehr! Freut mich, dass ich helfen konnte. Noch etwas?' },
+  ];
+
+  const chatLog = document.getElementById('chatMessages') || document.querySelector('.chat-messages');
+
+  function addChatBubble(role, text) {
+    const chatBox = document.getElementById('messages');
+    if (!chatBox) return;
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.textContent = text;
+    div.appendChild(bubble);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function getBotReply(msg) {
+    const lower = msg.toLowerCase();
+    for (const r of chatResponses) {
+      if (r.keys.some(k => lower.includes(k))) return r.reply;
+    }
+    return '🤖 Gute Frage! Für detaillierte Infos rufen Sie uns gerne an: 030 1234567. Unser KI-Telefon-Bot ist 24/7 erreichbar und hilft Ihnen sofort weiter!';
+  }
+
+  window.sendMessage = function() {
+    const input = document.getElementById('userInput');
+    if (!input) return;
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    addChatBubble('user', msg);
+    // Typing indicator
+    const chatBox = document.getElementById('messages');
+    const typing = document.createElement('div');
+    typing.className = 'msg bot';
+    typing.innerHTML = '<div class="msg-bubble" style="opacity:0.6;">✍️ Schreibt...</div>';
+    if (chatBox) { chatBox.appendChild(typing); chatBox.scrollTop = chatBox.scrollHeight; }
+    setTimeout(() => {
+      if (typing.parentNode) typing.parentNode.removeChild(typing);
+      addChatBubble('bot', getBotReply(msg));
+    }, 800 + Math.random() * 600);
+  };
+
+  // Enter key support
+  document.addEventListener('DOMContentLoaded', function() {
+    const inp = document.getElementById('userInput');
+    if (inp) inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+  });
+
   // TELEFON BOT → Skript-Demo
   const phoneScript = [
     { role:'bot', text:'Guten Tag! Hier ist Sofia, die KI-Assistentin der Pizzeria Latina. Wie kann ich Ihnen helfen?' },
