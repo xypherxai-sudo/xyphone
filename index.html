@@ -232,13 +232,13 @@
                       </div>
                     </div>
                   </div>
-                  <div id="phoneActive" style="display:none;flex:1;flex-direction:column;position:relative;">
+                  <div id="phoneActive" style="display:none;flex:1;flex-direction:column;position:relative;min-height:0;overflow:hidden;">
                     <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px;">
                       <div style="width:28px;height:28px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
                       <div><div style="font-size:11px;font-weight:700;color:white;">Xyphone Bot</div><div style="font-size:8px;color:rgba(255,255,255,.4);">Pizzeria Latina</div></div>
                       <div id="phoneTimer" style="margin-left:auto;font-family:monospace;font-size:9px;color:#00b87a;">00:00</div>
                     </div>
-                    <div id="phoneMsgs" style="height:185px;overflow-y:scroll;scroll-behavior:smooth;"></div>
+                    <div id="phoneMsgs" style="flex:1;min-height:0;overflow-y:auto;display:block;"></div>
                     <!-- Mic-Indikator: zeigt wenn KI zuhört -->
                     <div id="phoneMicIndicator" style="display:none;justify-content:center;align-items:center;gap:4px;padding:5px 0;">
                       <span style="font-size:13px;">&#127899;&#65039;</span>
@@ -1109,44 +1109,34 @@ const res = await fetch('https://api.web3forms.com/submit', {
     startTimer();
 
     document.getElementById('phoneStatus').textContent = '🔌 Verbinde mit KI...';
-
     try {
-      const widget = document.getElementById('elWidget');
-      if (widget && typeof widget.startSession === 'function') {
-        // Widget API
-        widget.startSession();
-        widget.addEventListener('connect', () => {
+      const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
+      const conv = await mod.Conversation.startSession({
+        agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
+        onConnect: () => {
           document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — jetzt sprechen!';
-        }, { once: true });
-        widget.addEventListener('disconnect', () => { window.phoneEnd(); }, { once: true });
-        window._phoneConv = widget;
-      } else {
-        // Fallback: SDK
-        const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
-        const conv = await mod.Conversation.startSession({
-          agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
-          onConnect: () => {
-            document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — jetzt sprechen!';
-            const ind = document.getElementById('phoneMicIndicator');
-            if (ind) ind.style.display = 'flex';
-          },
-          onDisconnect: () => { window.phoneEnd(); },
-          onError: () => { document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus'; runScript(0); },
-          onModeChange: (m) => {
-            const ind = document.getElementById('phoneMicIndicator');
-            document.getElementById('phoneStatus').textContent = m.mode === 'speaking' ? '🤖 Bot spricht...' : '🎙️ Jetzt sprechen!';
-            if (ind) ind.style.display = m.mode === 'speaking' ? 'none' : 'flex';
-          },
-          onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
-        });
-        window._phoneConv = conv;
-      }
+          const ind = document.getElementById('phoneMicIndicator');
+          if (ind) ind.style.display = 'flex';
+        },
+        onDisconnect: () => { window.phoneEnd(); },
+        onError: (err) => {
+          console.warn('EL Fehler:', err);
+          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
+          runScript(0);
+        },
+        onModeChange: (m) => {
+          const ind = document.getElementById('phoneMicIndicator');
+          document.getElementById('phoneStatus').textContent = m.mode === 'speaking' ? '🤖 Bot spricht...' : '🎙️ Jetzt sprechen!';
+          if (ind) ind.style.display = m.mode === 'speaking' ? 'none' : 'flex';
+        },
+        onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
+      });
+      window._phoneConv = conv;
     } catch(e) {
       console.warn('Fehler:', e.name, e.message);
       if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
         document.getElementById('phoneStatus').textContent = '❌ Mikrofon blockiert — im Browser erlauben!';
-        setPhoneUI('idle');
-        phoneRunning = false;
+        setPhoneUI('idle'); phoneRunning = false;
       } else {
         document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
         runScript(0);
