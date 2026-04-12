@@ -689,7 +689,7 @@
       <div id="mstep5" class="mstep" style="display:none;text-align:center;padding:1rem 0;">
         <div style="width:70px;height:70px;background:linear-gradient(135deg,#00d4aa,#00a070);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 1.2rem;box-shadow:0 0 30px rgba(0,212,170,0.4);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);">✅</div>
         <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">Danke! <span id="mSuccessName"></span></h3>
-        <p style="color:rgba(240,240,255,0.5);margin-bottom:1.5rem;line-height:1.7;">Wir melden uns innerhalb von <strong style="color:white;">24–48 Stunden</strong> mit deiner persönlichen Bot-Demo.</p>
+        <p style="color:rgba(240,240,255,0.5);margin-bottom:1.5rem;line-height:1.7;">Wir melden uns innerhalb von <strong style="color:white;">24–48 Stunden</strong> mit deiner persönlichen Bot-Demo.<br><br><span style="color:rgba(240,240,255,0.5);font-size:0.85rem;">📎 Du kannst uns dann per E-Mail deine Speisekarte und Fotos schicken.</span></p>
         <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(240,240,255,0.6);border-radius:10px;padding:0.8rem 1.5rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">Schließen</button>
       </div>
 
@@ -712,13 +712,7 @@
     if (e.target === document.getElementById('onboardingModal')) closeModal();
   }
 
-  function handleMenuPhoto(input) {
-    const files = Array.from(input.files).slice(0, 5);
-    if (!files.length) return;
-    const nameEl = document.getElementById('mbizMenuPhotoName');
-    nameEl.innerHTML = files.map(f => '✅ ' + f.name).join('<br>');
-    nameEl.style.display = 'block';
-  }
+
 
   function mSelectBranche(el, name) {
     document.querySelectorAll('.mpill').forEach(p => {
@@ -856,13 +850,7 @@
       fd.append('contactName', name);
       fd.append('contactEmail', email);
       fd.append('contactPhone', document.getElementById('mcontactPhone').value);
-      // Bilder anhängen (bis zu 5)
-      const photoInput = document.getElementById('mbizMenuPhoto');
-      if (photoInput && photoInput.files.length > 0) {
-        Array.from(photoInput.files).slice(0, 5).forEach((file, i) => {
-          fd.append(`foto_${i+1}`, file, file.name);
-        });
-      }
+
       await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     } catch(e) { console.warn(e); }
     document.getElementById('mSuccessName').textContent = name + '!';
