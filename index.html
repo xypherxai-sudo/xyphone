@@ -842,26 +842,29 @@
     btn.textContent = '⏳ Wird gesendet...';
     btn.disabled = true;
     try {
-const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: '57ca5d37-2f8b-4887-9910-b246aaa191df',
-          subject: 'Neue Xyphone Bot-Anfrage: ' + (document.getElementById('mbizName').value || name),
-          from_name: 'Xyphone Formular',
-          replyto: email,
-          botcheck: false,
-          branche: mBranche === '❓ Andere' ? document.getElementById('mAndereText').value : mBranche,
-          bizName: document.getElementById('mbizName').value,
-          bizCity: document.getElementById('mbizCity').value,
-          bizHours: document.getElementById('mbizHours').value,
-          services: document.getElementById('mbizServices').value,
-          faq: document.getElementById('mbizFaq').value,
-          contactName: name, contactEmail: email,
-          contactPhone: document.getElementById('mcontactPhone').value
-        })
-      });
-    } catch(e) {}
+      const fd = new FormData();
+      fd.append('access_key', '57ca5d37-2f8b-4887-9910-b246aaa191df');
+      fd.append('subject', 'Neue Xyphone Bot-Anfrage: ' + (document.getElementById('mbizName').value || name));
+      fd.append('from_name', 'Xyphone Formular');
+      fd.append('replyto', email);
+      fd.append('branche', mBranche === '❓ Andere' ? document.getElementById('mAndereText').value : mBranche);
+      fd.append('bizName', document.getElementById('mbizName').value);
+      fd.append('bizCity', document.getElementById('mbizCity').value);
+      fd.append('bizHours', document.getElementById('mbizHours').value);
+      fd.append('services', document.getElementById('mbizServices') ? document.getElementById('mbizServices').value : '');
+      fd.append('faq', document.getElementById('mbizFaq').value);
+      fd.append('contactName', name);
+      fd.append('contactEmail', email);
+      fd.append('contactPhone', document.getElementById('mcontactPhone').value);
+      // Bilder anhängen (bis zu 5)
+      const photoInput = document.getElementById('mbizMenuPhoto');
+      if (photoInput && photoInput.files.length > 0) {
+        Array.from(photoInput.files).slice(0, 5).forEach((file, i) => {
+          fd.append(`foto_${i+1}`, file, file.name);
+        });
+      }
+      await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+    } catch(e) { console.warn(e); }
     document.getElementById('mSuccessName').textContent = name + '!';
     mGoTo(5);
   }
