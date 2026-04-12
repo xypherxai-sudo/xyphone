@@ -472,3 +472,74 @@ footer p { color: var(--text-muted); font-size: 0.85rem; }
   .branchen-grid { grid-template-columns: repeat(2, 1fr); }
   nav ul { display: none; }
 }
+
+/* ===== MOBILE (iPhone) ===== */
+@media (max-width: 480px) {
+  /* Nav */
+  nav { padding: 1rem 1.2rem; }
+  .logo { font-size: 1.1rem; }
+
+  /* Hero */
+  .hero { padding: 3rem 1.2rem 2.5rem; }
+  .hero h1 { font-size: 2rem; line-height: 1.15; }
+  .hero p { font-size: 0.95rem; }
+  .hero-btns { flex-direction: column; align-items: center; gap: 0.7rem; }
+  .hero-btns a { width: 100%; text-align: center; }
+  .hero-stats { gap: 1.5rem; }
+  .hero-stats .stat span { font-size: 1.6rem; }
+  .hero-visual { max-width: 240px; }
+
+  /* Sections */
+  .leistungen, .beispiele, .pakete { padding: 3rem 0; }
+  h2 { font-size: 1.6rem !important; }
+  .subtitle { font-size: 0.9rem !important; }
+  .container { padding: 0 1.2rem !important; }
+
+  /* Cards */
+  .cards { grid-template-columns: 1fr !important; gap: 1rem; }
+  .card.featured { grid-column: span 1 !important; }
+
+  /* Pakete */
+  .pakete-grid { grid-template-columns: 1fr !important; gap: 1.2rem; }
+  .paket { padding: 1.5rem 1.2rem; }
+  .preis { font-size: 2rem; }
+
+  /* Branchen */
+  .branchen-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .branche { padding: 0.8rem 0.5rem; font-size: 0.82rem; }
+
+  /* Demo section */
+  .demo-wrapper { grid-template-columns: 1fr; }
+  .demo-section { padding: 3rem 1.2rem; }
+
+  /* Video */
+  section iframe { width: 100% !important; }
+
+  /* FAQ */
+  .faq-q { font-size: 0.92rem; }
+
+  /* Modal */
+  .modal-box { padding: 1.4rem; border-radius: 18px; }
+  .modal-box h3 { font-size: 1.25rem !important; }
+
+  /* Steps grid */
+  div[style*="grid-template-columns:repeat(auto-fit"] { 
+    grid-template-columns: 1fr !important; 
+    gap: 1rem !important;
+  }
+
+  /* Reviews */
+  .review-card { width: 240px; padding: 1rem; }
+
+  /* Footer */
+  footer { padding: 2.5rem 1.2rem; text-align: center; }
+
+  /* Buttons */
+  .btn-primary, .btn-secondary { 
+    padding: 0.85rem 1.5rem !important; 
+    font-size: 0.95rem !important;
+  }
+
+  /* Big CTA */
+  div[style*="Jetzt anfragen"] h2 { font-size: 1.8rem !important; }
+}
