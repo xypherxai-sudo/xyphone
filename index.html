@@ -57,6 +57,7 @@
   .modal-box::-webkit-scrollbar { width: 4px; }
   .modal-box::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 4px; }
   </style>
+  <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 </head>
 <body>
 
@@ -201,6 +202,9 @@
       <h2>Probier es <span>live aus</span></h2>
       <p class="subtitle">Telefon-Bot links — Chatbot rechts. Beide KI-gesteuert, beide sofort verfügbar.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+
+        <!-- ElevenLabs Widget (hidden, triggered by phone button) -->
+        <elevenlabs-convai id="elWidget" agent-id="agent_8201knwkdyy8eekvjn3tyht0n081" style="display:none;"></elevenlabs-convai>
 
         <!-- TELEFON BOT -->
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:1.5rem;text-align:center;">
@@ -1047,6 +1051,13 @@ const res = await fetch('https://api.web3forms.com/submit', {
     setPhoneUI('idle');
     document.getElementById('phoneTimer').textContent = '00:00';
     document.getElementById('phoneStatus').textContent = '';
+    document.getElementById('phoneMsgs').innerHTML = '';
+    try {
+      const w = window._phoneConv;
+      if (w && typeof w.endSession === 'function') w.endSession();
+      else if (w && typeof w.endConversation === 'function') w.endConversation();
+    } catch(e) {}
+    window._phoneConv = null;
   };
 
   function addPhoneBubble(role, text) {
@@ -1095,37 +1106,39 @@ const res = await fetch('https://api.web3forms.com/submit', {
     document.getElementById('phoneStatus').textContent = '🎙️ Mikrofon wird aktiviert...';
     startTimer();
 
-    try {
-      // ElevenLabs SDK kümmert sich selbst um das Mikrofon
-      const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
-      document.getElementById('phoneStatus').textContent = '🔌 Verbinde mit KI...';
+    document.getElementById('phoneStatus').textContent = '🔌 Verbinde mit KI...';
 
-      const conv = await mod.Conversation.startSession({
-        agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
-        onConnect: () => {
+    try {
+      const widget = document.getElementById('elWidget');
+      if (widget && typeof widget.startSession === 'function') {
+        // Widget API
+        widget.startSession();
+        widget.addEventListener('connect', () => {
           document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — jetzt sprechen!';
-          const ind = document.getElementById('phoneMicIndicator');
-          if (ind) ind.style.display = 'flex';
-        },
-        onDisconnect: () => { window.phoneEnd(); },
-        onError: (err) => {
-          console.warn('ElevenLabs Fehler:', JSON.stringify(err));
-          document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus';
-          runScript(0);
-        },
-        onModeChange: (m) => {
-          const ind = document.getElementById('phoneMicIndicator');
-          if (m.mode === 'speaking') {
-            document.getElementById('phoneStatus').textContent = '🤖 Bot spricht...';
-            if (ind) ind.style.display = 'none';
-          } else if (m.mode === 'listening') {
-            document.getElementById('phoneStatus').textContent = '🎙️ Jetzt sprechen!';
+        }, { once: true });
+        widget.addEventListener('disconnect', () => { window.phoneEnd(); }, { once: true });
+        window._phoneConv = widget;
+      } else {
+        // Fallback: SDK
+        const mod = await import('https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm');
+        const conv = await mod.Conversation.startSession({
+          agentId: 'agent_8201knwkdyy8eekvjn3tyht0n081',
+          onConnect: () => {
+            document.getElementById('phoneStatus').textContent = '🎙️ Verbunden — jetzt sprechen!';
+            const ind = document.getElementById('phoneMicIndicator');
             if (ind) ind.style.display = 'flex';
-          }
-        },
-        onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
-      });
-      window._phoneConv = conv;
+          },
+          onDisconnect: () => { window.phoneEnd(); },
+          onError: () => { document.getElementById('phoneStatus').textContent = '🔄 Demo-Modus'; runScript(0); },
+          onModeChange: (m) => {
+            const ind = document.getElementById('phoneMicIndicator');
+            document.getElementById('phoneStatus').textContent = m.mode === 'speaking' ? '🤖 Bot spricht...' : '🎙️ Jetzt sprechen!';
+            if (ind) ind.style.display = m.mode === 'speaking' ? 'none' : 'flex';
+          },
+          onMessage: (msg) => { addPhoneBubble(msg.source === 'ai' ? 'bot' : 'user', msg.message); }
+        });
+        window._phoneConv = conv;
+      }
     } catch(e) {
       console.warn('Fehler:', e.name, e.message);
       if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
