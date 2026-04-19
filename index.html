@@ -689,8 +689,18 @@
       <div id="mstep5" class="mstep" style="display:none;text-align:center;padding:1rem 0;">
         <div style="width:70px;height:70px;background:linear-gradient(135deg,#00d4aa,#00a070);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 1.2rem;box-shadow:0 0 30px rgba(0,212,170,0.4);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);">✅</div>
         <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">Danke! <span id="mSuccessName"></span></h3>
-        <p style="color:rgba(240,240,255,0.5);margin-bottom:1.5rem;line-height:1.7;">Wir melden uns innerhalb von <strong style="color:white;">24–48 Stunden</strong> mit deiner persönlichen Bot-Demo.<br><br><span style="color:rgba(240,240,255,0.5);font-size:0.85rem;">📎 Du kannst uns dann per E-Mail deine Speisekarte und Fotos schicken.</span></p>
-        <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(240,240,255,0.6);border-radius:10px;padding:0.8rem 1.5rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">Schließen</button>
+        <p style="color:rgba(240,240,255,0.5);margin-bottom:1rem;line-height:1.7;">Wir melden uns innerhalb von <strong style="color:white;">24–48 Stunden</strong> mit deiner persönlichen Bot-Demo.</p>
+
+        <!-- Fotos per Email schicken -->
+        <div id="mPhotoStep" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;text-align:left;">
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">📷 Jetzt Fotos & Speisekarte schicken</div>
+          <div style="font-size:0.83rem;color:rgba(240,240,255,0.5);margin-bottom:0.9rem;line-height:1.6;">Klick auf den Button — dein Email-Programm öffnet sich mit dem richtigen Betreff. Einfach Fotos dranhängen und senden.</div>
+          <a id="mPhotoMailLink" href="#" onclick="openPhotoMail(); return false;" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:10px;padding:0.75rem 1.4rem;font-size:0.9rem;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;box-shadow:0 4px 18px rgba(124,58,237,0.4);">
+            📧 Fotos jetzt per Email schicken
+          </a>
+        </div>
+
+        <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(240,240,255,0.6);border-radius:10px;padding:0.8rem 1.5rem;font-size:0.9rem;font-family:inherit;cursor:pointer;">Später schließen</button>
       </div>
 
     </div>
@@ -828,8 +838,8 @@
     }
   }
 
-  // Speichert hochgeladene Fotos zwischen
   let mPhotos = [];
+  let mSubmittedBizName = '';
   function handleMenuPhoto(input) {
     mPhotos = Array.from(input.files).slice(0, 5);
     const el = document.getElementById('mbizMenuPhotoName');
@@ -839,6 +849,11 @@
     } else {
       el.style.display = 'none';
     }
+  }
+  function openPhotoMail() {
+    const subj = encodeURIComponent('Fotos für Bot-Anfrage: ' + (mSubmittedBizName || 'Mein Unternehmen'));
+    const body = encodeURIComponent('Hallo Xyphone-Team,\n\nhiermit schicke ich euch die Fotos und Speisekarte für meine Bot-Anfrage.\n\nMein Unternehmen: ' + (mSubmittedBizName || '') + '\n\nViele Grüße');
+    window.location.href = 'mailto:xypherxai@gmail.com?subject=' + subj + '&body=' + body;
   }
 
   async function mSubmit() {
@@ -864,24 +879,13 @@
       fd.append('contactEmail', email);
       fd.append('contactPhone', document.getElementById('mcontactPhone').value);
 
-      // Fotos als Base64 anhängen (bis zu 5 Bilder)
       if (mPhotos.length > 0) {
-        const toBase64 = file => new Promise((res, rej) => {
-          const r = new FileReader();
-          r.onload = () => res(r.result);
-          r.onerror = rej;
-          r.readAsDataURL(file);
-        });
-        const b64list = await Promise.all(mPhotos.map(toBase64));
-        fd.append('fotos_info', `${mPhotos.length} Foto(s) hochgeladen: ${mPhotos.map(f=>f.name).join(', ')}`);
-        b64list.forEach((b64, i) => {
-          // Web3Forms: Datei-Objekte direkt anhängen (funktioniert auf Pro-Plan)
-          fd.append(`foto_${i+1}`, mPhotos[i], mPhotos[i].name);
-        });
+        fd.append('fotos_info', `${mPhotos.length} Foto(s) werden separat per Email geschickt: ${mPhotos.map(f=>f.name).join(', ')}`);
       }
 
       await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     } catch(e) { console.warn(e); }
+    mSubmittedBizName = document.getElementById('mbizName')?.value || name;
     document.getElementById('mSuccessName').textContent = name + '!';
     mGoTo(5);
   }
