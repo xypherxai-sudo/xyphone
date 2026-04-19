@@ -828,6 +828,19 @@
     }
   }
 
+  // Speichert hochgeladene Fotos zwischen
+  let mPhotos = [];
+  function handleMenuPhoto(input) {
+    mPhotos = Array.from(input.files).slice(0, 5);
+    const el = document.getElementById('mbizMenuPhotoName');
+    if (mPhotos.length) {
+      el.textContent = '📎 ' + mPhotos.map(f => f.name).join(', ');
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
   async function mSubmit() {
     const name = document.getElementById('mcontactName').value.trim();
     const email = document.getElementById('mcontactEmail').value.trim();
@@ -850,6 +863,22 @@
       fd.append('contactName', name);
       fd.append('contactEmail', email);
       fd.append('contactPhone', document.getElementById('mcontactPhone').value);
+
+      // Fotos als Base64 anhängen (bis zu 5 Bilder)
+      if (mPhotos.length > 0) {
+        const toBase64 = file => new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.onerror = rej;
+          r.readAsDataURL(file);
+        });
+        const b64list = await Promise.all(mPhotos.map(toBase64));
+        fd.append('fotos_info', `${mPhotos.length} Foto(s) hochgeladen: ${mPhotos.map(f=>f.name).join(', ')}`);
+        b64list.forEach((b64, i) => {
+          // Web3Forms: Datei-Objekte direkt anhängen (funktioniert auf Pro-Plan)
+          fd.append(`foto_${i+1}`, mPhotos[i], mPhotos[i].name);
+        });
+      }
 
       await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     } catch(e) { console.warn(e); }
